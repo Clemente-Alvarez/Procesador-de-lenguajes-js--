@@ -1,0 +1,68 @@
+//// Gramática LR(1)
+Axioma = P
+NoTerminales = { P S L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z }
+Terminales = { id = ( ) ; output , : function { } void if switch int boolean string lambda var eof < constEntera cadena -= * && input return break case $ }
+Producciones = {
+	S -> id S1 //// Sentencias simples
+	S -> output E ;
+	S -> input ( id ) ;
+	S -> return X ;
+	S -> break ; 
+	S -> case V : S
+		
+	F -> function F1 F2 F3 { C } //// Declaración de funciones
+	F1 -> H
+	F2 -> id 
+	F3 -> ( A )
+		
+	B -> if ( E ) S //// Sentencias compuestas y declaración de variables
+	B -> var T id ; 
+	B -> S
+	B -> switch
+		
+	P -> B P //// Estructura del programa = Axioma
+	P -> F P
+	P -> eof
+	P -> $
+		
+	E -> Z E1 //// Expresiones
+	Z -> R Z1
+	R -> U R1
+	U -> V U1
+	V -> id V1
+ 	V -> constEntera 
+	V -> cadena
+	V1 -> ( V2 )
+	V2 -> L
+	S1 -> = E ; 
+	S1 -> ( L ) ;
+	L -> E Q 
+	L -> lambda
+	Q -> , E Q 
+	Q -> lambda
+	X -> E 
+	X -> lambda
+	C -> B C 
+	C -> lambda
+	H -> T 
+	H -> lambda 
+	H -> void
+	A -> T id K 
+	A -> lambda 
+	A -> void
+	K -> , T id K 
+	K -> lambda
+	T -> int 
+	T -> boolean 
+	T -> string
+	E1 -> && Z E1 
+	E1 -> lambda
+	Z1 -> < R Z1 
+	Z1 -> lambda
+	R1 -> * U R1 
+	R1 -> lambda
+	U1 -> -= V U1 
+	U1 -> lambda
+}
+
+

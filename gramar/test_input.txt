@@ -1,0 +1,8 @@
+var int a;
+boolean bb;
+function put (string s, void RR) {
+put bb; put "hola”;
+put (RR);
+get (a);
+if (bb) return s;
+put 4 *a *( 98765 + 8); }
