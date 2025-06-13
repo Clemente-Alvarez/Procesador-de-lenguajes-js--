@@ -65,10 +65,7 @@ public class analizadorSintactico {
         stack = new Stack<>();
         actionMap = new HashMap<>();
         gotoMap = new HashMap<>();
-        rules = new Rule[gramar.length];
-        for (int i = 0; i < gramar.length; i++) {
-            rules[i] = gramar[i];
-        }
+        rules = gramar;
 
         int actionTableColums = 0;
         int curLine  = 0;
@@ -84,14 +81,22 @@ public class analizadorSintactico {
 
             String[] cells = line.split(CSV_SEPARADOR);// Dividir la línea en columnas usando coma como separador OJO algunos csv usan ; en vez de ,
             boolean foundA = false;
+            int offset = 0;
             for (int i = 1; i < cells.length; i++) {
                 if (cells[i].trim().equals("S") && !foundA){
                     foundA = true;
                     actionTableColums = i -1;
                 }
 
-                if(!foundA) actionMap.put(cells[i], i-1);
-                else gotoMap.put(cells[i], i - actionTableColums);
+                if(!foundA){
+                    if(cells[i].equals("\"")){
+                        actionMap.put(CSV_SEPARADOR, i-1 + offset);
+                        i++;
+                        offset -=1;
+                    }
+                    actionMap.put(cells[i], i-1 + offset);
+                } 
+                else gotoMap.put(cells[i], i - actionTableColums + offset);
             }
             int lines = (int)br.lines().count();
             br.close();
@@ -112,8 +117,6 @@ public class analizadorSintactico {
         } catch (IOException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
         }
-        //System.out.println(actionTableToString());
-        //System.out.println(gotoTableToString());
     }
 
     private String getActionTable(String readInput, int stateNumber){
@@ -134,12 +137,14 @@ public class analizadorSintactico {
         Token<?> token;
         stack.clear();
         stack.add(new StackType("$"));//añadimos el fondo de pila
+        System.err.println(actionMap.toString());
 
         try{
             while (!stack.empty()) {
                 token = AL.nextToken();
                 //separa la información de la celda correspondiente en la letra y numero
                 System.err.println(token.toString());
+                System.err.println(state);
                 if(!actionMap.containsKey(token.name)) throw new NotValidTokenException();
                 String[] cell = getActionTable(token.name, state).split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) throw new NotValidTokenException();
