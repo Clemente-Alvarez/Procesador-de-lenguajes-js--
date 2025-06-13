@@ -7,29 +7,30 @@ public class TestSintactico {
             String csvFileName = "gramar/Accion-GoTo.csv"; 
             ts symbolTable = new ts("TablaGloval", 0);
             analizadorLexico lexer = new analizadorLexico(inputFileName, symbolTable);
-
+            
             
             Rule[] grammar = {
-                new Rule("S", new String[] {"id", "S1"}),
-                new Rule("S", new String[] {"output", "E", ";"}),
-                new Rule("S", new String[] {"input", "(", "id", ")", ";"}),
-                new Rule("S", new String[] {"return", "X", ";"}),
-                new Rule("S", new String[] {"break", ";"}),
-                new Rule("S", new String[] {"case", "V", ":", "S"}),
+                new Rule("S", new String[] {"B", "S"}),
+                new Rule("S", new String[] {"F", "S"}),
+                new Rule("S", new String[] {"eof"}),
+                
+                new Rule("P", new String[] {"id", "S1"}),
+                new Rule("P", new String[] {"output", "E", ";"}),
+                new Rule("P", new String[] {"input", "(", "id", ")", ";"}),
+                new Rule("P", new String[] {"return", "X", ";"}),
+                new Rule("P", new String[] {"break", ";"}),
+                new Rule("P", new String[] {"case", "V", ":", "P"}),
             
                 new Rule("F", new String[] {"function", "F1", "F2", "F3", "{", "C", "}"}),
                 new Rule("F1", new String[] {"H"}),
                 new Rule("F2", new String[] {"id"}),
                 new Rule("F3", new String[] {"(", "A", ")"}),
             
-                new Rule("B", new String[] {"if", "(", "E", ")", "S"}),
+                new Rule("B", new String[] {"if", "(", "E", ")", "P"}),
                 new Rule("B", new String[] {"var", "T", "id", ";"}),
-                new Rule("B", new String[] {"S"}),
+                new Rule("B", new String[] {"P"}),
                 new Rule("B", new String[] {"switch"}),
             
-                new Rule("P", new String[] {"B", "P"}),
-                new Rule("P", new String[] {"F", "P"}),
-                new Rule("P", new String[] {"eof"}),
             
                 new Rule("E", new String[] {"Z", "E1"}),
                 new Rule("Z", new String[] {"R", "Z1"}),

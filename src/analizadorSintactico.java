@@ -10,12 +10,20 @@ import java.util.Stack;
 class StackType {//para poder meter estados y tokens en el stack
     Token<?> token;
     String estado; //TODO estado tendra que que guardar el tipo de la expresión para en analizador semantico que ocurre de foma simultanea al sintactico
+    boolean isToken;
     public StackType(Token<?> t){
         token = t;
+        isToken = true;
     }
 
     public StackType(String s){
         estado = s;
+        isToken = false;
+    }
+
+    public String toString(){
+        if(isToken) return token.toString();
+        else return estado;
     }
     
 }
@@ -103,13 +111,13 @@ public class analizadorSintactico {
             br = new BufferedReader(new FileReader(csvName));
             br.readLine();
             actionTable = new String[lines][actionTableColums];
-            gotoTable = new int[lines][(cells.length-1) -actionTableColums];
+            gotoTable = new int[lines][(cells.length) -actionTableColums];
             // Leer el archivo línea por línea
             while ((line = br.readLine()) != null) {
                 cells = line.split(CSV_SEPARADOR);
                 for(int i = 1; i < cells.length;i++){
                     if(i <= actionTableColums) actionTable[curLine][i -1] = cells[i];
-                    else if(!(cells[i].equals(""))) gotoTable[curLine][i - (1 + actionTableColums)] = Integer.parseInt(cells[i]);
+                    else if(!(cells[i].equals(""))) gotoTable[curLine][i - (actionTableColums)] = Integer.parseInt(cells[i]);
                 }
                 curLine++;
             }
@@ -137,21 +145,21 @@ public class analizadorSintactico {
         Token<?> token;
         stack.clear();
         stack.add(new StackType("$"));//añadimos el fondo de pila
-        System.err.println(actionMap.toString());
+        System.err.println(gotoMap.toString());
 
         try{
             while (!stack.empty()) {
                 token = AL.nextToken();
                 //separa la información de la celda correspondiente en la letra y numero
-                System.err.println(token.toString());
-                System.err.println(state);
+                System.err.println("token: " + token.toString() + "\tstate: " + state);
+                System.err.println("stack: " + stack.toString() + "\n");
                 if(!actionMap.containsKey(token.name)) throw new NotValidTokenException();
                 String[] cell = getActionTable(token.name, state).split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) throw new NotValidTokenException();
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
                     stack.push(new StackType(token));
-                    stack.push(new StackType(state.toString()));
                     state = Integer.parseInt(cell[1]);
+                    stack.push(new StackType(state.toString()));
                 }
                 else{//Accion de reducir
                     Integer rule = Integer.parseInt(cell[1]); 
@@ -160,9 +168,10 @@ public class analizadorSintactico {
                         //TODO comporbar que el tipo es correcto ANALIZADOR SEMANTICO y apilar el tipo croespondiente
                     }
                     //TODO semantico
+                    StackType temp = stack.peek();
                     stack.push(new StackType(rules[rule].antecedene));
+                    state = getGotoTable(rules[rule].antecedene, Integer.parseInt(temp.estado));
                     stack.push(new StackType(state.toString()));
-                    state = getGotoTable(rules[rule].antecedene, rule);
                     //TODO las reglas no estan correctamente ordenadas en el conjunto rules y el antecedenteno coincide
                 }
                 trace.add(cell[0] + cell[1]);
