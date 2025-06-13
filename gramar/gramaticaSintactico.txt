@@ -1,29 +1,28 @@
 //// Gramática LR(1)
-Axioma = P
-NoTerminales = { P S L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z }
+Axioma = S
+NoTerminales = { S P L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z }
 Terminales = { id = ( ) ; output , : function { } void if switch int boolean string lambda var eof < constEntera cadena -= * && input return break case $ }
 Producciones = {
-	S -> id S1 //// Sentencias simples
-	S -> output E ;
-	S -> input ( id ) ;
-	S -> return X ;
-	S -> break ; 
-	S -> case V : S
+	S -> B S //// Estructura del programa = Axioma
+	S -> F S
+	S -> eof
 		
 	F -> function F1 F2 F3 { C } //// Declaración de funciones
 	F1 -> H
 	F2 -> id 
 	F3 -> ( A )
 		
-	B -> if ( E ) S //// Sentencias compuestas y declaración de variables
+	B -> if ( E ) P //// Sentencias compuestas y declaración de variables
 	B -> var T id ; 
-	B -> S
+	B -> P
 	B -> switch
 		
-	P -> B P //// Estructura del programa = Axioma
-	P -> F P
-	P -> eof
-	P -> $
+	P -> id S1 //// Sentencias simples
+	P -> output E ;
+	P -> input ( id ) ;
+	P -> return X ;
+	P -> break ; 
+	P -> case V : P
 		
 	E -> Z E1 //// Expresiones
 	Z -> R Z1
@@ -55,6 +54,7 @@ Producciones = {
 	T -> int 
 	T -> boolean 
 	T -> string
+	T -> void
 	E1 -> && Z E1 
 	E1 -> lambda
 	Z1 -> < R Z1 

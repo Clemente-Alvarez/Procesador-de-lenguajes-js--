@@ -3,8 +3,8 @@ import java.util.List;
 public class TestSintactico {
     public static void main(String[] args) {
         try {
-            String inputFileName = "test_input.txt"; 
-            String csvFileName = "Accion-GoTo.csv"; 
+            String inputFileName = "gramar/test_input.txt"; 
+            String csvFileName = "gramar/Accion-GoTo.csv"; 
             ts symbolTable = new ts("TablaGloval", 0);
             analizadorLexico lexer = new analizadorLexico(inputFileName, symbolTable);
 
@@ -30,7 +30,6 @@ public class TestSintactico {
                 new Rule("P", new String[] {"B", "P"}),
                 new Rule("P", new String[] {"F", "P"}),
                 new Rule("P", new String[] {"eof"}),
-                new Rule("P", new String[] {"$"}),
             
                 new Rule("E", new String[] {"Z", "E1"}),
                 new Rule("Z", new String[] {"R", "Z1"}),
@@ -62,6 +61,7 @@ public class TestSintactico {
                 new Rule("T", new String[] {"int"}),
                 new Rule("T", new String[] {"boolean"}),
                 new Rule("T", new String[] {"string"}),
+                new Rule("T", new String[] {"void"}),
                 new Rule("E1", new String[] {"&&", "Z", "E1"}),
                 new Rule("E1", new String[] {"lambda"}),
                 new Rule("Z1", new String[] {"<", "R", "Z1"}),

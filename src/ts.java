@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.util.Pair;
-
 class Entry{
     String name, tipo, etiq;
     int desplazamiento, numParametros, ancho;

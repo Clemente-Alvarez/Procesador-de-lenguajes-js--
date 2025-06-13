@@ -34,7 +34,7 @@ class Rule {//para poder meter estados y tokens en el stack
 
 public class analizadorSintactico {
     //cambiar esta parte del codigo dependiendo de los separadores del csv
-    static final String CSV_SEPARADOR = ",";
+    static final String CSV_SEPARADOR = ";";
 
     private Stack<StackType> stack;
     private analizadorLexico AL;
@@ -85,7 +85,7 @@ public class analizadorSintactico {
             String[] cells = line.split(CSV_SEPARADOR);// Dividir la línea en columnas usando coma como separador OJO algunos csv usan ; en vez de ,
             boolean foundA = false;
             for (int i = 1; i < cells.length; i++) {
-                if (cells[i].trim().equals("A") && !foundA){
+                if (cells[i].trim().equals("S") && !foundA){
                     foundA = true;
                     actionTableColums = i -1;
                 }
