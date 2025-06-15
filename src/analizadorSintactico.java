@@ -9,21 +9,41 @@ import java.util.Stack;
 
 class StackType {//para poder meter estados y tokens en el stack
     Token<?> token;
-    String estado; //TODO estado tendra que que guardar el tipo de la expresión para en analizador semantico que ocurre de foma simultanea al sintactico
+    String estado;
+    AnalizadorSemantio.Type tipo;
     boolean isToken;
+    boolean hasType;
     public StackType(Token<?> t){
         token = t;
+        hasType = false;
         isToken = true;
     }
 
     public StackType(String s){
         estado = s;
+        hasType = false;
+        isToken = false;
+    }
+
+    public StackType(String s, AnalizadorSemantio.Type t){
+        estado = s;
+        tipo = t;
+        hasType = true;
         isToken = false;
     }
 
     public String toString(){
         if(isToken) return token.toString();
-        else return estado;
+        else if(hasType) switch (tipo) {
+            case TIPO_OK: return "[ "+ estado + ", TIPO_OK ]";
+            case ERROR: return "[ "+ estado + ", ERROR ]";
+            case CADENA: return "[ "+ estado + ", CADENA ]";
+            case ENTERO: return "[ "+ estado + ", ENTERO ]";
+            case VACIO: return "[ "+ estado + ", VACIO ]";
+            case LOGICO: return "[ "+ estado + ", LOGICO ]";
+
+        }
+        return estado;
     }
     
 }
@@ -46,6 +66,7 @@ public class analizadorSintactico {
 
     private Stack<StackType> stack;
     private analizadorLexico AL;
+    private AnalizadorSemantio AS;
     private ts tablaSim;
 
     Rule[] rules;
@@ -74,6 +95,7 @@ public class analizadorSintactico {
         actionMap = new HashMap<>();
         gotoMap = new HashMap<>();
         rules = gramar;
+        AS = new AnalizadorSemantio(tablaSim);
 
         int actionTableColums = 0;
         int curLine  = 0;
@@ -142,37 +164,43 @@ public class analizadorSintactico {
     List<String> compute(){
         List<String> trace = new LinkedList<String>();
         Integer state = 0;
-        Token<?> token;
+        Token<?> token = null;
         stack.clear();
         stack.add(new StackType("$"));//añadimos el fondo de pila
         System.err.println(gotoMap.toString());
 
         try{
+            boolean getNext = true;
             while (!stack.empty()) {
-                token = AL.nextToken();
+                if(getNext) token = AL.nextToken();
+                getNext = false;
                 //separa la información de la celda correspondiente en la letra y numero
                 System.err.println("token: " + token.toString() + "\tstate: " + state);
                 System.err.println("stack: " + stack.toString() + "\n");
                 if(!actionMap.containsKey(token.name)) throw new NotValidTokenException();
                 String[] cell = getActionTable(token.name, state).split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) throw new NotValidTokenException();
+
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
                     stack.push(new StackType(token));
                     state = Integer.parseInt(cell[1]);
                     stack.push(new StackType(state.toString()));
+                    getNext = true;
                 }
                 else{//Accion de reducir
                     Integer rule = Integer.parseInt(cell[1]); 
+                    StackType[] reductionData = new StackType[rules[rule].elementos.length];
                     for(int n =  2 * rules[rule].elementos.length; n > 0; n--){
                         StackType item = stack.pop();
-                        //TODO comporbar que el tipo es correcto ANALIZADOR SEMANTICO y apilar el tipo croespondiente
+                        if( n % 2 == 1){
+                            reductionData[n/2] = item;
+                        }
                     }
-                    //TODO semantico
+                    AnalizadorSemantio.Type type = AS.compute(reductionData, rule);
                     StackType temp = stack.peek();
-                    stack.push(new StackType(rules[rule].antecedene));
+                    stack.push(new StackType(rules[rule].antecedene, type));
                     state = getGotoTable(rules[rule].antecedene, Integer.parseInt(temp.estado));
                     stack.push(new StackType(state.toString()));
-                    //TODO las reglas no estan correctamente ordenadas en el conjunto rules y el antecedenteno coincide
                 }
                 trace.add(cell[0] + cell[1]);
             }

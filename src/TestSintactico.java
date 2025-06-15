@@ -29,7 +29,7 @@ public class TestSintactico {
                 new Rule("B", new String[] {"if", "(", "E", ")", "P"}),
                 new Rule("B", new String[] {"var", "T", "id", ";"}),
                 new Rule("B", new String[] {"P"}),
-                new Rule("B", new String[] {"switch"}),
+                new Rule("B", new String[] {"switch", "(", "E", ")", "{", "C", "}"}),
             
             
                 new Rule("E", new String[] {"Z", "E1"}),
