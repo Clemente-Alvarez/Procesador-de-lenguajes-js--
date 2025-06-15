@@ -1,5 +1,5 @@
 var int a;
-boolean bb;
+var boolean bb;
 function put (string s, void RR) {
 put bb; put "hola”;
 put (RR);

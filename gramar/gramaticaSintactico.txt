@@ -6,7 +6,6 @@ Producciones = {
 	S -> B S
 	S -> F S
 	S -> eof
-	
     P -> id S1
 	P -> output E ;
 	P -> input ( id ) ;
@@ -22,7 +21,7 @@ Producciones = {
 	B -> if ( E ) P
 	B -> var T id ; 
 	B -> P
-	B -> switch
+	B -> switch ( E ) { C }
 		
 	E -> Z E1
 	Z -> R Z1
@@ -45,7 +44,6 @@ Producciones = {
 	C -> lambda
 	H -> T 
 	H -> lambda 
-	H -> void
 	A -> T id K 
 	A -> lambda 
 	A -> void

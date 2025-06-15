@@ -53,7 +53,6 @@ public class TestSintactico {
                 new Rule("C", new String[] {"lambda"}),
                 new Rule("H", new String[] {"T"}),
                 new Rule("H", new String[] {"lambda"}),
-                new Rule("H", new String[] {"void"}),
                 new Rule("A", new String[] {"T", "id", "K"}),
                 new Rule("A", new String[] {"lambda"}),
                 new Rule("A", new String[] {"void"}),
