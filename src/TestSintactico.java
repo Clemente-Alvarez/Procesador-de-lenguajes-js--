@@ -31,45 +31,58 @@ public class TestSintactico {
                 new Rule("B", new String[] {"P"}),
                 new Rule("B", new String[] {"switch", "(", "E", ")", "{", "C", "}"}),
             
-            
                 new Rule("E", new String[] {"Z", "E1"}),
                 new Rule("Z", new String[] {"R", "Z1"}),
                 new Rule("R", new String[] {"U", "R1"}),
                 new Rule("U", new String[] {"V", "U1"}),
+
                 new Rule("V", new String[] {"id", "V1"}),
                 new Rule("V", new String[] {"constEntera"}),
                 new Rule("V", new String[] {"cadena"}),
+
                 new Rule("V1", new String[] {"(", "V2", ")"}),
                 new Rule("V2", new String[] {"L"}),
                 new Rule("S1", new String[] {"=", "E", ";"}),
                 new Rule("S1", new String[] {"(", "L", ")", ";"}),
+
                 new Rule("L", new String[] {"E", "Q"}),
-                new Rule("L", new String[] {"lambda"}),
+                new Rule("L", new String[] {}),
+
                 new Rule("Q", new String[] {",", "E", "Q"}),
-                new Rule("Q", new String[] {"lambda"}),
+                new Rule("Q", new String[] {}),
+
                 new Rule("X", new String[] {"E"}),
-                new Rule("X", new String[] {"lambda"}),
+                new Rule("X", new String[] {}),
+
                 new Rule("C", new String[] {"B", "C"}),
-                new Rule("C", new String[] {"lambda"}),
+                new Rule("C", new String[] {}),
+
                 new Rule("H", new String[] {"T"}),
-                new Rule("H", new String[] {"lambda"}),
+                new Rule("H", new String[] {}),
+                
                 new Rule("A", new String[] {"T", "id", "K"}),
-                new Rule("A", new String[] {"lambda"}),
+                new Rule("A", new String[] {}),
                 new Rule("A", new String[] {"void"}),
+
                 new Rule("K", new String[] {",", "T", "id", "K"}),
-                new Rule("K", new String[] {"lambda"}),
+                new Rule("K", new String[] {}),
+
                 new Rule("T", new String[] {"int"}),
                 new Rule("T", new String[] {"boolean"}),
                 new Rule("T", new String[] {"string"}),
                 new Rule("T", new String[] {"void"}),
+
                 new Rule("E1", new String[] {"&&", "Z", "E1"}),
-                new Rule("E1", new String[] {"lambda"}),
+                new Rule("E1", new String[] {}),
+
                 new Rule("Z1", new String[] {"<", "R", "Z1"}),
-                new Rule("Z1", new String[] {"lambda"}),
+                new Rule("Z1", new String[] {}),
+
                 new Rule("R1", new String[] {"*", "U", "R1"}),
-                new Rule("R1", new String[] {"lambda"}),
+                new Rule("R1", new String[] {}),
+                
                 new Rule("U1", new String[] {"-=", "V", "U1"}),
-                new Rule("U1", new String[] {"lambda"}),
+                new Rule("U1", new String[] {}),
             };
             
 

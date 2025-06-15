@@ -32,6 +32,21 @@ class StackType {//para poder meter estados y tokens en el stack
         isToken = false;
     }
 
+    public Token<?> getToken(){
+        if(isToken) return token;
+        else return null;
+    }
+
+    public String getEstado(){
+        if(!isToken) return estado;
+        else return null;
+    }
+
+    public AnalizadorSemantio.Type getType(){
+        if(hasType) return tipo;
+        else return AnalizadorSemantio.Type.ERROR;
+    }
+
     public String toString(){
         if(isToken) return token.toString();
         else if(hasType) switch (tipo) {
@@ -177,8 +192,8 @@ public class analizadorSintactico {
                 //separa la información de la celda correspondiente en la letra y numero
                 System.err.println("token: " + token.toString() + "\tstate: " + state);
                 System.err.println("stack: " + stack.toString() + "\n");
-                if(!actionMap.containsKey(token.name)) throw new NotValidTokenException();
-                String[] cell = getActionTable(token.name, state).split("(?<=\\D)(?=\\d)");
+                if(!actionMap.containsKey(token.getName())) throw new NotValidTokenException();
+                String[] cell = getActionTable(token.getName(), state).split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) throw new NotValidTokenException();
 
                 if(cell[0].equals("s")){//Accion de desplazar o Stack

@@ -103,6 +103,14 @@ public class ts {
 		return new Token<Integer>("id", nextId++);
     }
 
+    void setDesplazamiento(int desplazamiento){
+        desp = desplazamiento;
+    }
+
+    public AnalizadorSemantio.Type getType(int pos){
+        return AnalizadorSemantio.Type.ERROR;
+    }
+
     public void dump(String file){
         try{
             FileWriter fileWriter = new FileWriter(file);

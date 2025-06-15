@@ -1,7 +1,7 @@
 public class Token<T> {
     
-    String name;
-    T mod;
+    private String name;
+    private T mod;
 
     public Token(String name, T mod){
         this.name = name;
