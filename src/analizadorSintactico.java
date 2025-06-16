@@ -201,7 +201,8 @@ public class analizadorSintactico {
                 else columName = token.getName();
                 if(!actionMap.containsKey(columName)) throw new NotValidTokenException();
                 String op = getActionTable(columName, state);
-                if(op == null) throw new NotValidTokenException(); 
+                if(op == "acc")System.err.println("Sintaxis accepted");
+                else if(op == null) throw new NotValidTokenException(); 
                 String[] cell = op.split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) {
                     if(!tryLambda){
