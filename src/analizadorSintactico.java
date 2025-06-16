@@ -184,6 +184,7 @@ public class analizadorSintactico {
         Token<?> token = null;
         stack.clear();
         stack.add(new StackType("$"));//añadimos el fondo de pila
+        stack.push(new StackType(state.toString()));
         System.err.println(gotoMap.toString());
 
         try{
@@ -196,8 +197,10 @@ public class analizadorSintactico {
                 System.err.println("stack: " + stack.toString() + "\n");
                 if(!actionMap.containsKey(token.getName())) throw new NotValidTokenException();
                 String[] cell = getActionTable(token.getName(), state).split("(?<=\\D)(?=\\d)");
-                if(cell.length != 2) throw new NotValidTokenException();
-
+                if(cell.length != 2) {
+                    System.err.println("formato no valido");
+                    throw new NotValidTokenException();
+                }
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
                     AS.computeStack(token);
                     stack.push(new StackType(token));
