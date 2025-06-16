@@ -1,8 +1,3 @@
-var int a;
-var boolean bb;
-function put (string s, void RR) {
-put bb; put "hola”;
-put (RR);
-get (a);
-if (bb) return s;
-put 4 *a *( 98765 + 8); }
+var int aa ;
+ var boolean no ;
+  function put ( string a , void RR) {}

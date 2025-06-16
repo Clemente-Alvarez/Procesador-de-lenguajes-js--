@@ -200,7 +200,6 @@ public class analizadorSintactico {
                 if(tryLambda) columName = "lambda";
                 else columName = token.getName();
                 if(!actionMap.containsKey(columName)) throw new NotValidTokenException();
-                System.out.println(getActionTable(columName, state));
                 String op = getActionTable(columName, state);
                 if(op == null) throw new NotValidTokenException(); 
                 String[] cell = op.split("(?<=\\D)(?=\\d)");

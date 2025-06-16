@@ -12,6 +12,7 @@ class Entry{
 
     public Entry(String name){
         this.name = name;
+        tipo = AnalizadorSemantio.Type.ERROR;
         params = new ArrayList<>();
     }
 
@@ -77,7 +78,7 @@ class Entry{
             case ENTERO: return "ENTERO";
             case VACIO: return "VACIO";
             case LOGICO: return "LOGICO";
-            default: return null;
+            default: return "ERROR";
         }
     }
 
@@ -102,6 +103,7 @@ public class ts {
         reservedKeyWords.put("if", "if");
         reservedKeyWords.put("input", "input");
         reservedKeyWords.put("int", "int");
+        reservedKeyWords.put("void", "void");
         reservedKeyWords.put("output", "output");
         reservedKeyWords.put("return", "return");
         reservedKeyWords.put("string", "string");
@@ -139,7 +141,7 @@ public class ts {
         //busca identificador
 		for(int i= 0; i < ts.size(); i++){
 			if(token.equals(ts.get(i).getName()))
-				return new Token<Integer>(token, i);
+				return new Token<Integer>("id", i);
 		}
         //crear identificador
 		ts.put(nextId, new Entry(token));
