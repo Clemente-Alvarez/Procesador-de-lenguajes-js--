@@ -189,24 +189,44 @@ public class analizadorSintactico {
 
         try{
             boolean getNext = true;
+            boolean tryLambda = false;
             while (!stack.empty()) {
                 if(getNext) token = AL.nextToken();
                 getNext = false;
                 //separa la información de la celda correspondiente en la letra y numero
                 System.err.println("token: " + token.toString() + "\tstate: " + state);
                 System.err.println("stack: " + stack.toString() + "\n");
-                if(!actionMap.containsKey(token.getName())) throw new NotValidTokenException();
-                String[] cell = getActionTable(token.getName(), state).split("(?<=\\D)(?=\\d)");
+                String columName;
+                if(tryLambda) columName = "lambda";
+                else columName = token.getName();
+                if(!actionMap.containsKey(columName)) throw new NotValidTokenException();
+                System.out.println(getActionTable(columName, state));
+                String op = getActionTable(columName, state);
+                if(op == null) throw new NotValidTokenException(); 
+                String[] cell = op.split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) {
-                    System.err.println("formato no valido");
-                    throw new NotValidTokenException();
+                    if(!tryLambda){
+                        tryLambda = true;
+                        continue;
+                    }
+                    else{
+                        System.err.println("formato no valido");
+                        throw new NotValidTokenException();
+                    } 
                 }
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
-                    AS.computeStack(token);
-                    stack.push(new StackType(token));
+                    if(tryLambda){
+                        AS.computeStack(new Token<>("lambda"));
+                        stack.push(new StackType(new Token<>("lambda")));
+                    }
+                    else{
+                        AS.computeStack(token);
+                        stack.push(new StackType(token));
+                    }
                     state = Integer.parseInt(cell[1]);
                     stack.push(new StackType(state.toString()));
-                    getNext = true;
+                    if(tryLambda) tryLambda = false;
+                    else getNext = true;
                 }
                 else{//Accion de reducir
                     Integer rule = Integer.parseInt(cell[1]); 
