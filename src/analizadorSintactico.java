@@ -119,7 +119,7 @@ public class analizadorSintactico {
         try {
             BufferedReader br = new BufferedReader(new FileReader(csvName));
             String line;
-            //cuenta para ver cuantas columas tiene la tabla acción porque asume que la tabla goto emieza por A (correctión S*)
+            //cuenta para ver cuantas columas tiene la tabla acción porque asume que la tabla goto emieza por A (correctión S')
             if((line = br.readLine()) == null){
                 System.out.println("El archivo csv tiene un fallo de formato.");
                 br.close();
@@ -130,18 +130,18 @@ public class analizadorSintactico {
             boolean foundA = false;
             int offset = 0;
             for (int i = 1; i < cells.length; i++) {
-                if (cells[i].trim().equals("S*") && !foundA){
+                if (cells[i].trim().equals("S'") && !foundA){
                     foundA = true;
                     actionTableColums = i -1;
                 }
 
                 if(!foundA){
                     if(cells[i].equals("\"")){
-                        actionMap.put(CSV_SEPARADOR, i-1 + offset);
+                        actionMap.put(AS.getTs().getKeyWordName(CSV_SEPARADOR), i-1 + offset);
                         i++;
                         offset -=1;
                     }
-                    actionMap.put(AS.getTs().getKeyWordName(cells[i]), i-1 + offset);
+                    else actionMap.put(AS.getTs().getKeyWordName(cells[i]), i-1 + offset);
                 } 
                 else gotoMap.put(cells[i], i - actionTableColums + offset);
             }
@@ -183,13 +183,11 @@ public class analizadorSintactico {
         Integer state = 0;
         Token<?> token = null;
         stack.clear();
-        stack.add(new StackType("$"));//añadimos el fondo de pila
-        stack.push(new StackType(state.toString()));
+        stack.push(new StackType(state.toString()));//añadimos el fondo de pila
         System.err.println(actionMap.toString());
 
         try{
             boolean getNext = true;
-            boolean tryLambda = false;
             while (!stack.empty()) {
                 if(getNext) token = AL.nextToken();
                 getNext = false;
@@ -197,36 +195,28 @@ public class analizadorSintactico {
                 System.err.println("token: " + token.toString() + "\tstate: " + state);
                 System.err.println("stack: " + stack.toString() + "\n");
                 String columName;
-                if(tryLambda) columName = "lambda";
-                else columName = token.getName();
-                if(!actionMap.containsKey(columName)) throw new NotValidTokenException();
+                columName = token.getName();
+                if(!actionMap.containsKey(columName)){
+                    System.out.println("no se reconoce " +columName);
+                    throw new NotValidTokenException();
+                } 
                 String op = getActionTable(columName, state);
-                if(op == "acc")System.err.println("Sintaxis accepted");
-                else if(op == null) throw new NotValidTokenException(); 
+                if(op.equals("acc")){
+                    System.err.println("Sintaxis accepted!");
+                    trace.add("acc");
+                    break;
+                }
                 String[] cell = op.split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) {
-                    if(!tryLambda){
-                        tryLambda = true;
-                        continue;
-                    }
-                    else{
-                        System.err.println("formato no valido");
+                        System.err.println("transición no valida");
                         throw new NotValidTokenException();
-                    } 
                 }
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
-                    if(tryLambda){
-                        AS.computeStack(new Token<>("lambda"));
-                        stack.push(new StackType(new Token<>("lambda")));
-                    }
-                    else{
                         AS.computeStack(token);
                         stack.push(new StackType(token));
-                    }
                     state = Integer.parseInt(cell[1]);
                     stack.push(new StackType(state.toString()));
-                    if(tryLambda) tryLambda = false;
-                    else getNext = true;
+                    getNext = true;
                 }
                 else{//Accion de reducir
                     Integer rule = Integer.parseInt(cell[1]); 

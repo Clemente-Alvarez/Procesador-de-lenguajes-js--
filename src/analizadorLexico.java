@@ -36,14 +36,14 @@ public class analizadorLexico {
                 currentLine++; // Increment line number on new line
             }
         } else {
-            currentChar = '\uFFFF'; // Represent EOF
+            currentChar = '$'; // Represent $
         }
     }
 
     public Token<?> nextToken() throws IOException {
         while (true) {
             if (currentState == -1) { // If the lexer is in exit state, stop processing
-                return AS.getTs().genToken("eof");
+                return AS.getTs().genToken("$");
             }
 
             if (canRead) {
@@ -123,9 +123,9 @@ public class analizadorLexico {
                      else if (currentChar == '/') {
                         canRead = true;
                         return AS.getTs().genToken("div");
-                    } else if (currentChar == '\uFFFF') { // EOF
+                    } else if (currentChar == '$') { // EOF
                         currentState = -1; // Mark lexer as done
-                        return AS.getTs().genToken("eof");
+                        return AS.getTs().genToken("$");
                     } else if (Character.isWhitespace(currentChar)) {
                         canRead = true; // Skip whitespace
                     } else {

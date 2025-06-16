@@ -122,7 +122,7 @@ public class ts {
         reservedKeyWords.put("<", "menor");
         reservedKeyWords.put("false", "false");
         reservedKeyWords.put("true", "true");
-        reservedKeyWords.put("eof", "eof");
+        reservedKeyWords.put("$", "$");
 
 		this.name = name;
         this.num = num;

@@ -8,9 +8,10 @@ public class TestSintactico {
             
             
             Rule[] grammar = {
-                new Rule("S*", new String[] {"eof"}),
+                new Rule("S'", new String[] {"$"}),
                 new Rule("S", new String[] {"B", "S"}),
                 new Rule("S", new String[] {"F", "S"}),
+                new Rule("S", new String[] {}),
                 
                 new Rule("P", new String[] {"id", "S1"}),
                 new Rule("P", new String[] {"output", "E", ";"}),
@@ -44,26 +45,26 @@ public class TestSintactico {
                 new Rule("S1", new String[] {"(", "L", ")", ";"}),
 
                 new Rule("L", new String[] {"E", "Q"}),
-                new Rule("L", new String[] {"lambda"}),
+                new Rule("L", new String[] {}),
 
                 new Rule("Q", new String[] {",", "E", "Q"}),
                 new Rule("Q", new String[] {}),
 
                 new Rule("X", new String[] {"E"}),
-                new Rule("X", new String[] {"lambda"}),
+                new Rule("X", new String[] {}),
 
                 new Rule("C", new String[] {"B", "C"}),
-                new Rule("C", new String[] {"lambda"}),
+                new Rule("C", new String[] {}),
 
                 new Rule("H", new String[] {"T"}),
-                new Rule("H", new String[] {"lambda"}),
+                new Rule("H", new String[] {}),
                 
                 new Rule("A", new String[] {"T", "id", "K"}),
-                new Rule("A", new String[] {"lambda"}),
+                new Rule("A", new String[] {}),
                 new Rule("A", new String[] {"void"}),
 
                 new Rule("K", new String[] {",", "T", "id", "K"}),
-                new Rule("K", new String[] {"lambda"}),
+                new Rule("K", new String[] {}),
 
                 new Rule("T", new String[] {"int"}),
                 new Rule("T", new String[] {"boolean"}),
@@ -71,16 +72,16 @@ public class TestSintactico {
                 new Rule("T", new String[] {"void"}),
 
                 new Rule("E1", new String[] {"&&", "Z", "E1"}),
-                new Rule("E1", new String[] {"lambda"}),
+                new Rule("E1", new String[] {}),
 
                 new Rule("Z1", new String[] {"<", "R", "Z1"}),
-                new Rule("Z1", new String[] {"lambda"}),
+                new Rule("Z1", new String[] {}),
 
                 new Rule("R1", new String[] {"*", "U", "R1"}),
-                new Rule("R1", new String[] {"lambda"}),
+                new Rule("R1", new String[] {}),
                 
                 new Rule("U1", new String[] {"-=", "V", "U1"}),
-                new Rule("U1", new String[] {"lambda"}),
+                new Rule("U1", new String[] {}),
             };
             
 
