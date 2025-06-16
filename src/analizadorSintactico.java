@@ -119,7 +119,7 @@ public class analizadorSintactico {
         try {
             BufferedReader br = new BufferedReader(new FileReader(csvName));
             String line;
-            //cuenta para ver cuantas columas tiene la tabla acción porque asume que la tabla goto emieza por A
+            //cuenta para ver cuantas columas tiene la tabla acción porque asume que la tabla goto emieza por A (correctión S*)
             if((line = br.readLine()) == null){
                 System.out.println("El archivo csv tiene un fallo de formato.");
                 br.close();
@@ -130,7 +130,7 @@ public class analizadorSintactico {
             boolean foundA = false;
             int offset = 0;
             for (int i = 1; i < cells.length; i++) {
-                if (cells[i].trim().equals("S") && !foundA){
+                if (cells[i].trim().equals("S*") && !foundA){
                     foundA = true;
                     actionTableColums = i -1;
                 }
@@ -141,7 +141,7 @@ public class analizadorSintactico {
                         i++;
                         offset -=1;
                     }
-                    actionMap.put(cells[i], i-1 + offset);
+                    actionMap.put(AS.getTs().getKeyWordName(cells[i]), i-1 + offset);
                 } 
                 else gotoMap.put(cells[i], i - actionTableColums + offset);
             }
@@ -185,7 +185,7 @@ public class analizadorSintactico {
         stack.clear();
         stack.add(new StackType("$"));//añadimos el fondo de pila
         stack.push(new StackType(state.toString()));
-        System.err.println(gotoMap.toString());
+        System.err.println(actionMap.toString());
 
         try{
             boolean getNext = true;

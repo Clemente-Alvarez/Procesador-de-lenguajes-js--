@@ -3,14 +3,14 @@ import java.util.List;
 public class TestSintactico {
     public static void main(String[] args) {
         try {
-            String inputFileName = "gramar/test_input.txt"; 
-            String csvFileName = "gramar/Accion-GoTo.csv"; 
+            String inputFileName = "grammar/test_input.txt"; 
+            String csvFileName = "grammar/Accion-GoTo.csv"; 
             
             
             Rule[] grammar = {
+                new Rule("S*", new String[] {"eof"}),
                 new Rule("S", new String[] {"B", "S"}),
                 new Rule("S", new String[] {"F", "S"}),
-                new Rule("S", new String[] {"eof"}),
                 
                 new Rule("P", new String[] {"id", "S1"}),
                 new Rule("P", new String[] {"output", "E", ";"}),

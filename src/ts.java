@@ -132,6 +132,11 @@ public class ts {
         nextId = 0;
 	}
 
+    public String getKeyWordName(String s){
+        if(reservedKeyWords.containsKey(s)) return reservedKeyWords.get(s);
+        else return s;
+    }
+
     public Token<Integer> genToken(String token) {
         //busca palabra reservada
         for(int i=0; i < 26;i++){

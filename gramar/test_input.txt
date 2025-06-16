@@ -1,3 +1,0 @@
-var int id ;
- var boolean id ;
-  function id ( string a , void RR) {}

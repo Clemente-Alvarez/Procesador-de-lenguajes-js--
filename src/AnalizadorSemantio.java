@@ -1,6 +1,6 @@
 
 public class AnalizadorSemantio {
-    private final String OUTPUTFILE = "gramar/output.txt";
+    private final String OUTPUTFILE = "grammar/output.txt";
 
     public enum Type {
         ERROR,
@@ -38,16 +38,16 @@ public class AnalizadorSemantio {
 
     public Type computeReduce(StackType[] data, int rule){
         switch (rule) {
-            //S -> B S
-            case 0: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return data[0].getType();
-            //S -> F S
-            case 1: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return data[0].getType();
-            //S -> eof
-            case 2: tsl.dump(OUTPUTFILE);
+             //S* -> S eof
+            case 0: tsl.dump(OUTPUTFILE);
                     if(data[0].getType() == data[1].getType()) return data[0].getType();
                     else return data[0].getType(); 
+            //S -> B S
+            case 1: if(data[0].getType() == data[1].getType()) return data[0].getType();
+                    else return data[0].getType();
+            //S -> F S
+            case 2: if(data[0].getType() == data[1].getType()) return data[0].getType();
+                    else return data[0].getType();
 
             //P -> id S1
             case 3: if(data[0].getToken().getName() != "id"){
