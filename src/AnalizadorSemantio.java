@@ -1,8 +1,10 @@
 
 public class AnalizadorSemantio {
+    private final String OUTPUTFILE = "gramar/output.txt";
+
     public enum Type {
-        TIPO_OK,
         ERROR,
+        TIPO_OK,
         CADENA,
         ENTERO,
         VACIO,
@@ -26,12 +28,9 @@ public class AnalizadorSemantio {
 
     public void computeStack(Token<?> t){
         switch (t.getName()) {
-                case "var":
-                        
+                case "var": zonaDeclaracion = true;        
                         break;
-                case "funcion": tsl = new ts(t.getName(), 1);
-                                zonaDeclaracion = true;
-                                tsl.setDesplazamiento(0);
+                case "funcion": zonaDeclaracion = true;
                         break;
                 default: break;
         }
@@ -40,11 +39,15 @@ public class AnalizadorSemantio {
     public Type computeReduce(StackType[] data, int rule){
         switch (rule) {
             //S -> B S
-            case 0: return Type.TIPO_OK;
+            case 0: if(data[0].getType() == data[1].getType()) return data[0].getType();
+                    else return data[0].getType();
             //S -> F S
-            case 1: return Type.TIPO_OK; 
+            case 1: if(data[0].getType() == data[1].getType()) return data[0].getType();
+                    else return data[0].getType();
             //S -> eof
-            case 2: return Type.TIPO_OK; 
+            case 2: tsl.dump(OUTPUTFILE);
+                    if(data[0].getType() == data[1].getType()) return data[0].getType();
+                    else return data[0].getType(); 
 
             //P -> id S1
             case 3: if(data[0].getToken().getName() != "id"){
@@ -82,19 +85,27 @@ public class AnalizadorSemantio {
 
             //F -> function F1 F2 F3 { C }
             case 9: Type t;
-                    //TODO instertar atributos en la tabla de simbolos
+                    mainTs.getEntry(mainTs.size() -1).setTipo(data[1].getType());
                     zonaDeclaracion = false;
                     if(data[5].getType() != data[1].getType()){
                         System.err.println("Invalid return type");
                         t =  Type.ERROR;
                     }
                     else t = Type.TIPO_OK;
+                    tsl.dump(OUTPUTFILE);
                     tsl = mainTs;
                     return t;
             //F1 -> H
             case 10: return data[0].getType();
             //F2 -> id
-            case 11: return tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo();
+            case 11: if(zonaDeclaracion){
+                        tsl = new ts(data[0].getToken().getName(), 1);
+                        mainTs.getEntry((Integer)data[0].getToken().getMod()).setEtiq(data[0].getToken().getName());
+                        return Type.TIPO_OK;
+                    }else{
+                        System.err.println("declaration out of declaration zone");
+                        return Type.ERROR;
+                    }
             //F3 -> ( A )
             case 12: return data[1].getType();
 
@@ -105,10 +116,14 @@ public class AnalizadorSemantio {
             }
                 return data[4].getType();
             //B -> var T id ;
-            case 14:
-                    //TODO instertar atributos
-                    //TODO modificar el desplazamiento
-                    zonaDeclaracion = false;
+            case 14: if(zonaDeclaracion){
+                        tsl.getEntry((Integer)data[2].getToken().getMod()).setTipo(data[1].getType());
+                        zonaDeclaracion = false;
+                        return Type.TIPO_OK;
+                     }else{
+                        System.err.println("declaration out of declaration zone");
+                        return Type.ERROR;
+                    }
             //B -> P
             case 15: return data[0].getType();
             //B -> switch ( E ) { C }
@@ -179,10 +194,16 @@ public class AnalizadorSemantio {
             case 37: return Type.VACIO;
 
             //A -> T id K
-            case 38:
-                    //TODO instertar atributos 
-                    //TODO modificar el desplazamiento
-                    zonaDeclaracion = false;
+            case 38: if(zonaDeclaracion){
+                        Entry entry = tsl.getEntry((Integer)data[1].getToken().getMod());
+                        entry.setTipo(data[0].getType());
+                        zonaDeclaracion = false;
+                        return Type.TIPO_OK;
+                    }
+                    else{
+                        System.err.println("declaration out of declaration zone");
+                        return Type.ERROR;
+                    }
             //A -> lambda
             case 39: return Type.TIPO_OK;
             //A -> void
@@ -190,11 +211,10 @@ public class AnalizadorSemantio {
 
             //K -> , T id K
             case 41: if(zonaDeclaracion){
-                        Entry entry = tsl.getEntry((Integer)data[0].getToken().getMod());
-                        entry.setTipo(data[0].getType());
-                        //TODO instertar atributos 
-                        //TODO modificar el desplazamiento
+                        Entry entry = tsl.getEntry((Integer)data[2].getToken().getMod());
+                        entry.setTipo(data[1].getType());
                         zonaDeclaracion = false;
+                        return Type.TIPO_OK;
                     }
                     else{
                         System.err.println("declaration out of declaration zone");

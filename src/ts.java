@@ -21,6 +21,21 @@ class Entry{
 
     public void setTipo(AnalizadorSemantio.Type t){
         tipo = t;
+        switch (tipo) {
+            case LOGICO:
+                setAncho(1);
+                setDesplazamiento(getDesplazamiento() +1);
+                break;
+            case ENTERO:
+                setAncho(4);
+                setDesplazamiento(getDesplazamiento() +4);
+                break;
+            case CADENA:
+                setAncho(64);
+                setDesplazamiento(getDesplazamiento() +64);
+                break;
+            default: System.err.println("ts: non valid type provided"); break;
+        }
     }
 
     public void setEtiq(String t){
@@ -70,12 +85,12 @@ class Entry{
 
 public class ts {
     
-    public String name;
+    private String name;
     int num;
     int desp;
     private int nextId;
 
-    private Map<Integer, Entry>  ts;//TODO modificar la tabla de simbolos para que incluya los atrivutos
+    private Map<Integer, Entry>  ts;
 
     private Map<String, String>  reservedKeyWords;
     
@@ -134,6 +149,12 @@ public class ts {
     void setDesplazamiento(int desplazamiento){
         desp = desplazamiento;
     }
+
+    String getName(){return name;}
+
+    int size(){return nextId;}
+
+    void changeName(String newName){name  = newName;}
 
     Entry getEntry(int desplazamiento){
         return ts.get(desplazamiento);
