@@ -5,8 +5,6 @@ public class TestSintactico {
         try {
             String inputFileName = "gramar/test_input.txt"; 
             String csvFileName = "gramar/Accion-GoTo.csv"; 
-            ts symbolTable = new ts("TablaGloval", 0);
-            analizadorLexico lexer = new analizadorLexico(inputFileName, symbolTable);
             
             
             Rule[] grammar = {
@@ -86,7 +84,7 @@ public class TestSintactico {
             };
             
 
-            analizadorSintactico parser = new analizadorSintactico(lexer, csvFileName, grammar, symbolTable);
+            analizadorSintactico parser = new analizadorSintactico(csvFileName, grammar, inputFileName);
 
             List<String> trace = parser.compute();
 

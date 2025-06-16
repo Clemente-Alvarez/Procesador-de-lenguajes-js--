@@ -12,16 +12,32 @@ public class AnalizadorSemantio {
     private boolean zonaDeclaracion;
     ts mainTs;
     ts tsl;
-
-
     
 
-    public AnalizadorSemantio(ts tablaSim){
-        mainTs = tablaSim;
+    public AnalizadorSemantio(){
+        mainTs = new ts("TablaGloval", 0);
+        tsl = mainTs;
         zonaDeclaracion  = false;
     }
 
-    public Type compute(StackType[] data, int rule){
+    ts getTs(){
+        return tsl;
+    }
+
+    public void computeStack(Token<?> t){
+        switch (t.getName()) {
+                case "var":
+                        
+                        break;
+                case "funcion": tsl = new ts(t.getName(), 1);
+                                zonaDeclaracion = true;
+                                tsl.setDesplazamiento(0);
+                        break;
+                default: break;
+        }
+    }
+
+    public Type computeReduce(StackType[] data, int rule){
         switch (rule) {
             //S -> B S
             case 0: return Type.TIPO_OK;
@@ -35,11 +51,11 @@ public class AnalizadorSemantio {
                         System.out.println("a variable was expected");
                         return Type.ERROR;
                     }
-                    else if(tsl.getType((Integer)data[0].getToken().getMod()) == Type.ERROR){
+                    else if(tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo() == Type.ERROR){
                             System.out.println("the variable was not declared yet");
                             return Type.ERROR;
                     }
-                    else return tsl.getType((Integer)data[0].getToken().getMod());
+                    else return tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo();
             //P -> output E ;
             case 4: if(data[1].getType() == Type.CADENA || data[1].getType() == Type.ENTERO) return Type.TIPO_OK;
                     else{
@@ -51,8 +67,8 @@ public class AnalizadorSemantio {
                         System.out.println("a variable was expected");
                         return Type.ERROR;
                     }
-                    else if(tsl.getType((Integer)data[2].getToken().getMod()) == Type.CADENA 
-                            || tsl.getType((Integer)data[2].getToken().getMod()) == Type.ENTERO) return Type.TIPO_OK;
+                    else if(tsl.getEntry((Integer)data[2].getToken().getMod()).getTipo() == Type.CADENA 
+                            || tsl.getEntry((Integer)data[2].getToken().getMod()).getTipo()  == Type.ENTERO)return Type.TIPO_OK;
                     else{            
                             System.out.println("boolean inputs not permited");
                             return Type.ERROR;
@@ -65,12 +81,9 @@ public class AnalizadorSemantio {
             case 8: return data[1].getType();
 
             //F -> function F1 F2 F3 { C }
-            case 9: tsl = new ts(data[0].getEstado(), 1);
-                    Type t;
-                    zonaDeclaracion = true;
-                    //TODO instertar la función en la tabla de simbolos 
+            case 9: Type t;
+                    //TODO instertar atributos en la tabla de simbolos
                     zonaDeclaracion = false;
-                    tsl.setDesplazamiento(0);
                     if(data[5].getType() != data[1].getType()){
                         System.err.println("Invalid return type");
                         t =  Type.ERROR;
@@ -81,7 +94,7 @@ public class AnalizadorSemantio {
             //F1 -> H
             case 10: return data[0].getType();
             //F2 -> id
-            case 11: return tsl.getType((Integer)data[0].getToken().getMod());
+            case 11: return tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo();
             //F3 -> ( A )
             case 12: return data[1].getType();
 
@@ -92,8 +105,8 @@ public class AnalizadorSemantio {
             }
                 return data[4].getType();
             //B -> var T id ;
-            case 14: zonaDeclaracion = true;
-                    //TODO instertar la variable en la tabla de simbolos 
+            case 14:
+                    //TODO instertar atributos
                     //TODO modificar el desplazamiento
                     zonaDeclaracion = false;
             //B -> P
@@ -122,7 +135,7 @@ public class AnalizadorSemantio {
                     else return Type.LOGICO;
 
             //V -> id V1
-            case 21: return tsl.getType((Integer)data[0].getToken().getMod());
+            case 21: return tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo();
             //V -> constEntera
             case 22: return Type.ENTERO;
             //V -> cadena
@@ -166,8 +179,8 @@ public class AnalizadorSemantio {
             case 37: return Type.VACIO;
 
             //A -> T id K
-            case 38: zonaDeclaracion = true;
-                    //TODO instertar la variable en la tabla de simbolos 
+            case 38:
+                    //TODO instertar atributos 
                     //TODO modificar el desplazamiento
                     zonaDeclaracion = false;
             //A -> lambda
@@ -176,21 +189,32 @@ public class AnalizadorSemantio {
             case 40: return Type.VACIO;
 
             //K -> , T id K
-            case 41: zonaDeclaracion = true;
-                    //TODO instertar la variable en la tabla de simbolos 
-                    //TODO modificar el desplazamiento
-                    zonaDeclaracion = false;
+            case 41: if(zonaDeclaracion){
+                        Entry entry = tsl.getEntry((Integer)data[0].getToken().getMod());
+                        entry.setTipo(data[0].getType());
+                        //TODO instertar atributos 
+                        //TODO modificar el desplazamiento
+                        zonaDeclaracion = false;
+                    }
+                    else{
+                        System.err.println("declaration out of declaration zone");
+                        return Type.ERROR;
+                    }
             //K -> lambda
             case 42: return Type.TIPO_OK;
 
             //T -> int
-            case 43: return Type.ENTERO;
+            case 43: zonaDeclaracion = true;
+                        return Type.ENTERO;
             //T -> boolean
-            case 44: return Type.LOGICO;
+            case 44: zonaDeclaracion = true;
+                        return Type.LOGICO;
             //T -> string
-            case 45: return Type.CADENA;
+            case 45: zonaDeclaracion = true;
+                        return Type.CADENA;
             //T -> void
-            case 46: return Type.VACIO;
+            case 46: zonaDeclaracion = true;
+                        return Type.VACIO;
 
             //E1 -> && Z E1
             case 47: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();

@@ -82,7 +82,6 @@ public class analizadorSintactico {
     private Stack<StackType> stack;
     private analizadorLexico AL;
     private AnalizadorSemantio AS;
-    private ts tablaSim;
 
     Rule[] rules;
 
@@ -103,14 +102,17 @@ public class analizadorSintactico {
      * new Rule("A", {}) //en caso de expresar lambda se usa la cedena vacia
      * };
     */
-    public analizadorSintactico(analizadorLexico AL, String csvName, Rule[] gramar, ts tablaSimbolos){
-        this.AL = AL;
-        tablaSim = tablaSimbolos;
+    public analizadorSintactico(String csvName, Rule[] gramar, String inputFileName){
         stack = new Stack<>();
         actionMap = new HashMap<>();
         gotoMap = new HashMap<>();
         rules = gramar;
-        AS = new AnalizadorSemantio(tablaSim);
+        AS = new AnalizadorSemantio();
+        try {
+            AL = new analizadorLexico(inputFileName, AS);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         int actionTableColums = 0;
         int curLine  = 0;
@@ -197,6 +199,7 @@ public class analizadorSintactico {
                 if(cell.length != 2) throw new NotValidTokenException();
 
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
+                    AS.computeStack(token);
                     stack.push(new StackType(token));
                     state = Integer.parseInt(cell[1]);
                     stack.push(new StackType(state.toString()));
@@ -211,7 +214,7 @@ public class analizadorSintactico {
                             reductionData[n/2] = item;
                         }
                     }
-                    AnalizadorSemantio.Type type = AS.compute(reductionData, rule);
+                    AnalizadorSemantio.Type type = AS.computeReduce(reductionData, rule);
                     StackType temp = stack.peek();
                     stack.push(new StackType(rules[rule].antecedene, type));
                     state = getGotoTable(rules[rule].antecedene, Integer.parseInt(temp.estado));

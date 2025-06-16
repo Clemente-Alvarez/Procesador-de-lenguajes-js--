@@ -10,18 +10,18 @@ public class analizadorLexico {
     private char currentChar;
     private boolean canRead;
     private int currentState;
-    private ts symbolTable;
+    private AnalizadorSemantio AS;
 
     private String lexeme;
     private int count;
     private int value;
     private int currentLine; // Keep track of the current line number
 
-    public analizadorLexico(String fileName, ts symbolTable) throws FileNotFoundException {
+    public analizadorLexico(String fileName, AnalizadorSemantio AS) throws FileNotFoundException {
+        this.AS = AS;
         this.fileReader = new FileReader(new File(fileName));
         this.canRead = true;
         this.currentState = 0;
-        this.symbolTable = symbolTable;
         this.lexeme = "";
         this.count = 0;
         this.value = 0;
@@ -43,7 +43,7 @@ public class analizadorLexico {
     public Token<?> nextToken() throws IOException {
         while (true) {
             if (currentState == -1) { // If the lexer is in exit state, stop processing
-                return symbolTable.genToken("eof");
+                return AS.getTs().genToken("eof");
             }
 
             if (canRead) {
@@ -68,39 +68,39 @@ public class analizadorLexico {
                         canRead = true;
                     } else if (currentChar == '=') {
                         canRead = true;
-                        return symbolTable.genToken("=");
+                        return AS.getTs().genToken("=");
                     } else if (currentChar == '{') {
                         canRead = true;
-                        return symbolTable.genToken("{");
+                        return AS.getTs().genToken("{");
                     } else if (currentChar == '}') {
                         canRead = true;
-                        return symbolTable.genToken("}");
+                        return AS.getTs().genToken("}");
                     } else if (currentChar == '(') {
                         canRead = true;
-                        return symbolTable.genToken("(");
+                        return AS.getTs().genToken("(");
                     } else if (currentChar == ')') {
                         canRead = true;
-                        return symbolTable.genToken(")");
+                        return AS.getTs().genToken(")");
                     } else if (currentChar == '*') {
                         canRead = true;
-                        return symbolTable.genToken("*");
+                        return AS.getTs().genToken("*");
                     } else if (currentChar == '<') {
                         canRead = true;
-                        return symbolTable.genToken("<");
+                        return AS.getTs().genToken("<");
                     } else if (currentChar == ';') {
                         canRead = true;
-                        return symbolTable.genToken(";");
+                        return AS.getTs().genToken(";");
                     } else if (currentChar == ',') {
                         canRead = true;
-                        return symbolTable.genToken(",");
+                        return AS.getTs().genToken(",");
                     } else if (currentChar == ':') {
                         canRead = true;
-                        return symbolTable.genToken(":");
+                        return AS.getTs().genToken(":");
                     }else if (currentChar == '&') {
                         readNextChar();
                         if (currentChar == '&') {
                             canRead = true;
-                            return symbolTable.genToken("&&");
+                            return AS.getTs().genToken("&&");
                         } else {
                             // Error: Single '&' is not a valid token
                             String errorMessage = "Invalid character: '&' at line " + currentLine;
@@ -112,7 +112,7 @@ public class analizadorLexico {
                         readNextChar();
                         if (currentChar == '=') {
                             canRead = true;
-                            return symbolTable.genToken("decAsig");
+                            return AS.getTs().genToken("decAsig");
                         } else {
                             // Error: Single '-' is not valid
                             String errorMessage = "Invalid character: '-' at line " + currentLine;
@@ -122,10 +122,10 @@ public class analizadorLexico {
                     }
                      else if (currentChar == '/') {
                         canRead = true;
-                        return symbolTable.genToken("div");
+                        return AS.getTs().genToken("div");
                     } else if (currentChar == '\uFFFF') { // EOF
                         currentState = -1; // Mark lexer as done
-                        return symbolTable.genToken("eof");
+                        return AS.getTs().genToken("eof");
                     } else if (Character.isWhitespace(currentChar)) {
                         canRead = true; // Skip whitespace
                     } else {
@@ -145,7 +145,7 @@ public class analizadorLexico {
                         if (count <= 64) {
                             //String lexemeValue = symbolTable.searchOrInsert(lexeme); // Get lexeme
                             currentState = 0;
-                            return symbolTable.genToken(lexeme); // Use lexeme as value
+                            return AS.getTs().genToken(lexeme); // Use lexeme as value
                         } else {
                             String errorMessage = "Identifier too long: '" + lexeme + "' at line " + currentLine;
                             currentState = 0;
