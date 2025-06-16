@@ -19,7 +19,7 @@ public class AnalizadorSemantio {
     public AnalizadorSemantio(){
         mainTs = new ts("TablaGloval", 0);
         tsl = mainTs;
-        zonaDeclaracion  = false;
+        zonaDeclaracion  = true;
     }
 
     ts getTs(){
@@ -98,14 +98,9 @@ public class AnalizadorSemantio {
             //F1 -> H
             case 10: return data[0].getType();
             //F2 -> id
-            case 11: if(zonaDeclaracion){
-                        tsl = new ts(data[0].getToken().getName(), 1);
-                        mainTs.getEntry((Integer)data[0].getToken().getMod()).setEtiq(data[0].getToken().getName());
-                        return Type.TIPO_OK;
-                    }else{
-                        System.err.println("declaration out of declaration zone");
-                        return Type.ERROR;
-                    }
+            case 11: tsl = new ts(tsl.getEntry((Integer)data[0].getToken().getMod()).getName(), 1);
+                     mainTs.getEntry((Integer)data[0].getToken().getMod()).setEtiq(data[0].getToken().getName());
+                     return Type.TIPO_OK;
             //F3 -> ( A )
             case 12: return data[1].getType();
 
@@ -206,14 +201,13 @@ public class AnalizadorSemantio {
                     }
             //A -> lambda
             case 39: return Type.TIPO_OK;
-            //A -> void
+            //A -> void2
             case 40: return Type.VACIO;
 
             //K -> , T id K
             case 41: if(zonaDeclaracion){
                         Entry entry = tsl.getEntry((Integer)data[2].getToken().getMod());
                         entry.setTipo(data[1].getType());
-                        zonaDeclaracion = false;
                         return Type.TIPO_OK;
                     }
                     else{

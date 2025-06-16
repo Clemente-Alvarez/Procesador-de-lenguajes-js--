@@ -3,9 +3,9 @@ Axioma = S
 NoTerminales = { S P L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z }
 Terminales = { id = ( ) ; output , : function { } void if switch int boolean string lambda var eof < constEntera cadena -= * && input return break case $ }
 Producciones = {
+	S* -> S eof
 	S -> B S
 	S -> F S
-	S -> eof
     P -> id S1
 	P -> output E ;
 	P -> input ( id ) ;

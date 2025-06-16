@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Entry{
+    static final int TAM_ENTERO = 1;
+    static final int TAM_LOGICO = 1;
+    static final int TAM_CADENA = 64;
+
     private String name, etiq;
     private AnalizadorSemantio.Type tipo;
     private int desplazamiento, numParametros, ancho;
@@ -16,24 +20,22 @@ class Entry{
         params = new ArrayList<>();
     }
 
-    public void setDesplazamiento(int d){
+    public int setDesplazamiento(int d){
         desplazamiento = d;
+        return d + ancho;
     }
 
     public void setTipo(AnalizadorSemantio.Type t){
         tipo = t;
         switch (tipo) {
             case LOGICO:
-                setAncho(1);
-                setDesplazamiento(getDesplazamiento() +1);
+                setAncho(TAM_LOGICO);
                 break;
             case ENTERO:
-                setAncho(4);
-                setDesplazamiento(getDesplazamiento() +4);
+                setAncho(TAM_ENTERO);
                 break;
             case CADENA:
-                setAncho(64);
-                setDesplazamiento(getDesplazamiento() +64);
+                setAncho(TAM_CADENA);
                 break;
             default: System.err.println("ts: non valid type provided"); break;
         }
@@ -72,12 +74,9 @@ class Entry{
 
     public String getTipoString (){
             switch (getTipo()) {
-            case TIPO_OK: return "TIPO_OK";
-            case ERROR: return "ERROR";
-            case CADENA: return "CADENA";
-            case ENTERO: return "ENTERO";
-            case VACIO: return "VACIO";
-            case LOGICO: return "LOGICO";
+            case CADENA: return "cadena";
+            case ENTERO: return "entero";
+            case LOGICO: return "logico";
             default: return "ERROR";
         }
     }
@@ -167,6 +166,15 @@ public class ts {
         return ts.get(desplazamiento);
     }
 
+    public int getSizeTipo (AnalizadorSemantio.Type t){
+            switch (t) {
+            case CADENA: return Entry.TAM_CADENA;
+            case ENTERO: return Entry.TAM_ENTERO;
+            case LOGICO: return Entry.TAM_LOGICO;
+            default: return 0;
+        }
+    }
+
     public void dump(String file){
         try{
             FileWriter fileWriter = new FileWriter(file);
@@ -174,11 +182,12 @@ public class ts {
             for(int i =0; i < ts.size(); i++){
                 if(!ts.get(i).equals("function")){
                     fileWriter.write(" * lexema: \'" +  ts.get(i).getName() + "\'\n");
-                    if(ts.get(i).getAncho() > 1){   
+                    if(ts.get(i).getAncho() > getSizeTipo(ts.get(i).getTipo())){   
                         fileWriter.write("    + tipo: \'vector\'\n");
                         fileWriter.write("    + tam: "+ ts.get(i).getAncho() + "\n");
                     }
                     else fileWriter.write("    + tipo: " + "\'" + ts.get(i).getTipoString() + "\'\n");
+                    desp = ts.get(i).setDesplazamiento(desp);
                     fileWriter.write("  + despl: " + ts.get(i).getDesplazamiento() + "\n");
                 }
                 else{
