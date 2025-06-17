@@ -62,6 +62,7 @@ Producciones = {
 	R1 -> lambda
 	U1 -> -= V U1 
 	U1 -> lambda
+	V1 -> lambda
 }
 
 

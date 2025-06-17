@@ -81,6 +81,7 @@ public class TestSintactico {
         
         new Rule("U1", new String[] {"-=", "V", "U1"}),
         new Rule("U1", new String[] {}),
+        new Rule("V1", new String[] {})
     };
     public static void main(String[] args) {
         try {

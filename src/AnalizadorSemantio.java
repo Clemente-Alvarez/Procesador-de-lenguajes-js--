@@ -285,6 +285,8 @@ public class AnalizadorSemantio {
                     else return Type.LOGICO;
             //U1 -> lambda
             case 55: return Type.TIPO_OK;
+            //V1 -> lambda
+            case 56: return Type.TIPO_OK;
 
             default: System.out.println("internal semantic flaw");
             return Type.ERROR;
