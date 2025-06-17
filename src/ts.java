@@ -213,7 +213,8 @@ public class ts {
                         fileWriter.write("    +TipoParam" + (a +1) +": " + "\'" + ts.get(i).getParametros().get(a).getKey() + "\'" + "\n"); 
                         fileWriter.write("     +ModoParam" + (a +1) +": " + ts.get(i).getParametros().get(a).getValue() + "\n"); //1 se pasa por valor 2 por referencia
                     }
-                    fileWriter.write("    +EtiqFuncion: " + ts.get(i).getEtiqueta() + "\n");
+                    fileWriter.write("    +TipoRetorno: " + "\'"+ ts.get(i).getTipoString() + "\'"+ "\n");
+                    fileWriter.write("    +EtiqFuncion: " + "\'"+ ts.get(i).getEtiqueta() + "\'"+ "\n");
                 }
             }
             fileWriter.close();

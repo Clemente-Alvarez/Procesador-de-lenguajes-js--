@@ -65,29 +65,29 @@ public class AnalizadorSemantio {
 
             //P -> id S1
             case 4: if(data[0].getToken().getName() != "id"){
-                        System.out.println("a variable was expected");
+                        System.out.println("a variable was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else if(tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo() == Type.ERROR){
-                            System.out.println("the variable was not declared yet");
+                            System.out.println("the variable was not declared yet at " + getTs().getName());
                             return Type.ERROR;
                     }
                     else return tsl.getEntry((Integer)data[0].getToken().getMod()).getTipo();
             //P -> output E ;
             case 5: if(data[1].getType() == Type.CADENA || data[1].getType() == Type.ENTERO) return Type.TIPO_OK;
                     else{
-                        System.err.println("boolean outputs not permited");
+                        System.err.println("boolean outputs not permited at " + getTs().getName());
                         return Type.ERROR;
                     }
             //P -> input ( id ) ;
             case 6: if(data[2].getToken().getName() != "id"){
-                        System.out.println("a variable was expected");
+                        System.out.println("a variable was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else if(tsl.getEntry((Integer)data[2].getToken().getMod()).getTipo() == Type.CADENA 
                             || tsl.getEntry((Integer)data[2].getToken().getMod()).getTipo()  == Type.ENTERO)return Type.TIPO_OK;
                     else{            
-                            System.out.println("boolean inputs not permited");
+                            System.out.println("boolean inputs not permited at "+ getTs().getName());
                             return Type.ERROR;
                     }
             //P -> return X ;
@@ -102,7 +102,7 @@ public class AnalizadorSemantio {
                     mainTs.getEntry(mainTs.size() -1).setTipo(data[1].getType());
                     zonaDeclaracion = false;
                     if(data[5].getType() != data[1].getType()){
-                        System.err.println("Invalid return type");
+                        System.err.println(data[5] + "does not match with " + data[1] +" of "+ getTs().getName());
                         t =  Type.ERROR;
                     }
                     else t = Type.TIPO_OK;
@@ -119,8 +119,8 @@ public class AnalizadorSemantio {
             case 13: return data[1].getType();
 
             //B -> if ( E ) P
-            case 14: if(data[3].getType() != Type.LOGICO){
-                System.err.println("a logic statement is required");
+            case 14: if(data[2].getType() != Type.LOGICO){
+                System.err.println("a logic statement is required at " + getTs().getName());
                 return Type.ERROR;
             }
                 return data[4].getType();
@@ -130,7 +130,7 @@ public class AnalizadorSemantio {
                         zonaDeclaracion = false;
                         return Type.TIPO_OK;
                      }else{
-                        System.err.println("declaration out of declaration zone");
+                        System.err.println("declaration out of declaration zone at "+ getTs().getName());
                         return Type.ERROR;
                     }
             //B -> P
@@ -138,22 +138,22 @@ public class AnalizadorSemantio {
             //B -> switch ( E ) { C }
             case 17: if(data[3].getType() == Type.CADENA || data[3].getType() == Type.ENTERO) return data[5].getType();
                     else{
-                        System.err.println("switch requires a string or integer");
+                        System.err.println("switch requires a string or integer at " + getTs().getName());
                         return Type.ERROR;
                     }
             //E -> Z E1
-            case 18: if(data[0].getType() == Type.LOGICO && data[1].getType() == Type.LOGICO) return data[0].getType();
+            case 18: if(data[1].getType() != Type.ERROR) return data[0].getType();
                     else return Type.ERROR;
             //Z -> R Z1
-            case 19: if(data[0].getType() == Type.ENTERO && data[1].getType() == Type.LOGICO) return data[1].getType();
+            case 19: if(data[1].getType() != Type.ERROR) return data[0].getType();
                     else return Type.ERROR;
             //R -> U R1
-            case 20: if(data[0].getType() == Type.ENTERO && data[1].getType() == Type.ENTERO) return data[0].getType();
+            case 20: if(data[1].getType() != Type.ERROR) return data[0].getType();
                     else return Type.ERROR;
             //U -> V U1
             case 21: if(data[1].getType() == Type.TIPO_OK) return data[0].getType();
                     else if(data[0].getType() != Type.ENTERO){
-                        System.err.println("The parameters must be integers");
+                        System.err.println("The parameters must be integers at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else return Type.LOGICO;
@@ -192,7 +192,8 @@ public class AnalizadorSemantio {
             case 34: return Type.VACIO;
 
             //C -> B C
-            case 35: if(data[0].getType() != Type.ERROR) return data[1].getType();
+            case 35: if(data[0].getType() == Type.TIPO_OK) return data[1].getType();
+                    if(data[0].getType() != Type.ERROR) return data[0].getType();
                     else return Type.ERROR;
             //C -> lambda
             case 36: return Type.VACIO;
@@ -211,7 +212,7 @@ public class AnalizadorSemantio {
                         return Type.TIPO_OK;
                     }
                     else{
-                        System.err.println("declaration out of declaration zone");
+                        System.err.println("declaration out of declaration zone at " + getTs().getName());
                         return Type.ERROR;
                     }
             //A -> lambda
@@ -227,7 +228,7 @@ public class AnalizadorSemantio {
                         return Type.TIPO_OK;
                     }
                     else{
-                        System.err.println("declaration out of declaration zone");
+                        System.err.println("declaration out of declaration zone at " + getTs().getName());
                         return Type.ERROR;
                     }
             //K -> lambda
@@ -249,7 +250,7 @@ public class AnalizadorSemantio {
             //E1 -> && Z E1
             case 48: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
                     else if(data[1].getType() != Type.LOGICO){
-                        System.err.println("a boolean was expected");
+                        System.err.println("a boolean was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else return Type.LOGICO;
@@ -259,7 +260,7 @@ public class AnalizadorSemantio {
             //Z1 -> < R Z1
             case 50: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
                     else if(data[1].getType() != Type.ENTERO){
-                        System.err.println("a boolean was expected");
+                        System.err.println("a boolean was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else return Type.LOGICO;
@@ -269,7 +270,7 @@ public class AnalizadorSemantio {
             //R1 -> * U R1
             case 52: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
                     else if(data[1].getType() != Type.ENTERO){
-                        System.err.println("a integer was expected");
+                        System.err.println("a integer was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
                     else return Type.ENTERO;
@@ -278,8 +279,8 @@ public class AnalizadorSemantio {
 
             //U1 -> -= V U1
             case 54: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
-                    else if(data[1].getType() != Type.LOGICO){
-                        System.err.println("a boolean was expected");
+                    else if(data[1].getType() != Type.ENTERO){
+                        System.err.println("a integer was expected at" + getTs().getName());
                         return Type.ERROR;
                     }
                     else return Type.LOGICO;
@@ -288,7 +289,7 @@ public class AnalizadorSemantio {
             //V1 -> lambda
             case 56: return Type.TIPO_OK;
 
-            default: System.out.println("internal semantic flaw");
+            default: System.out.println("internal semantic flaw at " + getTs().getName());
             return Type.ERROR;
         }
     }
