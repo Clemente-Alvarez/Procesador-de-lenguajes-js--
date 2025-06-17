@@ -203,9 +203,10 @@ public class analizadorSintactico {
                 if(op.equals("acc")){//Accion accept
                     System.err.println("Sintaxis accepted!");
                     trace.add("acc");
+                    stack.pop();
                     StackType temp[] = {stack.pop()};
                     AnalizadorSemantio.Type type = AS.computeReduce(temp, 0);
-                    if(type == AnalizadorSemantio.Type.TIPO_OK) System.out.print("Semantic accepted!");
+                    if(type == AnalizadorSemantio.Type.TIPO_OK) System.out.println("Semantic accepted!");
                     else System.out.println("Semantic falied!");
                     break;
                 }
