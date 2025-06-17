@@ -1,5 +1,6 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
 
 public class AnalizadorSemantio {
     private final String OUTPUTFILE = "grammar/output.txt";
@@ -141,14 +142,14 @@ public class AnalizadorSemantio {
                         return Type.ERROR;
                     }
             //E -> Z E1
-            case 18: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return Type.TIPO_OK;
+            case 18: if(data[0].getType() == Type.LOGICO && data[1].getType() == Type.LOGICO) return data[0].getType();
+                    else return Type.ERROR;
             //Z -> R Z1
-            case 19: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return Type.TIPO_OK;
+            case 19: if(data[0].getType() == Type.ENTERO && data[1].getType() == Type.LOGICO) return data[1].getType();
+                    else return Type.ERROR;
             //R -> U R1
-            case 20: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return Type.TIPO_OK;
+            case 20: if(data[0].getType() == Type.ENTERO && data[1].getType() == Type.ENTERO) return data[0].getType();
+                    else return Type.ERROR;
             //U -> V U1
             case 21: if(data[1].getType() == Type.TIPO_OK) return data[0].getType();
                     else if(data[0].getType() != Type.ENTERO){
@@ -261,17 +262,17 @@ public class AnalizadorSemantio {
                         System.err.println("a boolean was expected");
                         return Type.ERROR;
                     }
-                    else return Type.ENTERO;
+                    else return Type.LOGICO;
             //Z1 -> lambda
             case 51: return Type.TIPO_OK;
 
             //R1 -> * U R1
             case 52: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
-                    else if(data[1].getType() != Type.LOGICO){
-                        System.err.println("a boolean was expected");
+                    else if(data[1].getType() != Type.ENTERO){
+                        System.err.println("a integer was expected");
                         return Type.ERROR;
                     }
-                    else return Type.LOGICO;
+                    else return Type.ENTERO;
             //R1 -> lambda
             case 53: return Type.TIPO_OK;
 
