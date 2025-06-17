@@ -56,7 +56,7 @@ class StackType {//para poder meter estados y tokens en el stack
             case ENTERO: return "[ "+ estado + ", ENTERO ]";
             case VACIO: return "[ "+ estado + ", VACIO ]";
             case LOGICO: return "[ "+ estado + ", LOGICO ]";
-
+            case RECURSIVE: return "[ "+ estado + ", RECURSIVE ]";
         }
         return estado;
     }

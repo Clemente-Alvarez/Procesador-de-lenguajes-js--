@@ -17,7 +17,7 @@ class Entry{
 
     public Entry(String name){
         this.name = name;
-        tipo = AnalizadorSemantio.Type.ERROR;
+        tipo = AnalizadorSemantio.Type.RECURSIVE;
         params = new ArrayList<>();
         numParametros = 0;
     }

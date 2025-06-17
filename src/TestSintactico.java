@@ -73,7 +73,7 @@ public class TestSintactico {
         new Rule("E1", new String[] {"&&", "Z", "E1"}),
         new Rule("E1", new String[] {}),
 
-        new Rule("Z1", new String[] {"<", "R", "Z1"}),
+        new Rule("Z1", new String[] {"<", "R"}),
         new Rule("Z1", new String[] {}),
 
         new Rule("R1", new String[] {"*", "U", "R1"}),
@@ -81,7 +81,10 @@ public class TestSintactico {
         
         new Rule("U1", new String[] {"-=", "V", "U1"}),
         new Rule("U1", new String[] {}),
-        new Rule("V1", new String[] {})
+        new Rule("V1", new String[] {}),
+
+        new Rule("I", new String[] {"B"}),
+        new Rule("I", new String[] {"{", "C", "}"}),
     };
     public static void main(String[] args) {
         try {

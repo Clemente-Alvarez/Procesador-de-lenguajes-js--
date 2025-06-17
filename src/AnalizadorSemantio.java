@@ -1,6 +1,5 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.annotation.ElementType;
 
 public class AnalizadorSemantio {
     private final String OUTPUTFILE = "grammar/output.txt";
@@ -11,7 +10,8 @@ public class AnalizadorSemantio {
         CADENA,
         ENTERO,
         VACIO,
-        LOGICO
+        LOGICO,
+        RECURSIVE
     }
 
     private boolean zonaDeclaracion;
@@ -55,11 +55,11 @@ public class AnalizadorSemantio {
             case 0: tsl.dump(OUTPUTFILE);
                     return data[0].getType();
             //S -> B S
-            case 1: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return data[0].getType();
+            case 1: if(data[1].getType() != Type.ERROR) return data[0].getType();
+                    else return data[1].getType();
             //S -> F S
-            case 2: if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return data[0].getType();
+            case 2: if(data[1].getType() != Type.ERROR) return data[0].getType();
+                    else return data[1].getType();
            //S -> lambda
            case 3: return Type.TIPO_OK;
 
@@ -101,8 +101,8 @@ public class AnalizadorSemantio {
             case 10: Type t;
                     mainTs.getEntry(mainTs.size() -1).setTipo(data[1].getType());
                     zonaDeclaracion = false;
-                    if(data[5].getType() != data[1].getType()){
-                        System.err.println(data[5] + "does not match with " + data[1] +" of "+ getTs().getName());
+                    if(data[5].getType() != data[1].getType() && data[5].getType() != Type.RECURSIVE){
+                        System.err.println(data[5].getType() + " type does not match with " + data[1].getType() +" of "+ getTs().getName());
                         t =  Type.ERROR;
                     }
                     else t = Type.TIPO_OK;
@@ -145,7 +145,8 @@ public class AnalizadorSemantio {
             case 18: if(data[1].getType() != Type.ERROR) return data[0].getType();
                     else return Type.ERROR;
             //Z -> R Z1
-            case 19: if(data[1].getType() != Type.ERROR) return data[0].getType();
+            case 19: if(data[1].getType() == Type.LOGICO && data[0].getType() == Type.ENTERO) return Type.LOGICO;
+                    else if(data[1].getType() == Type.TIPO_OK) return data[0].getType();
                     else return Type.ERROR;
             //R -> U R1
             case 20: if(data[1].getType() != Type.ERROR) return data[0].getType();
@@ -248,7 +249,7 @@ public class AnalizadorSemantio {
                         return Type.VACIO;
 
             //E1 -> && Z E1
-            case 48: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
+            case 48: if(data[2].getType() == Type.LOGICO) return data[1].getType();
                     else if(data[1].getType() != Type.LOGICO){
                         System.err.println("a boolean was expected at " + getTs().getName());
                         return Type.ERROR;
@@ -257,13 +258,12 @@ public class AnalizadorSemantio {
             //E1 -> lambda
             case 49: return Type.TIPO_OK;
 
-            //Z1 -> < R Z1
-            case 50: if(data[2].getType() == Type.TIPO_OK) return data[1].getType();
-                    else if(data[1].getType() != Type.ENTERO){
-                        System.err.println("a boolean was expected at " + getTs().getName());
+            //Z1 -> < R
+            case 50: if(data[1].getType() == Type.ENTERO) return Type.LOGICO;
+                    else{
+                        System.err.println("an integer was expected at " + getTs().getName());
                         return Type.ERROR;
                     }
-                    else return Type.LOGICO;
             //Z1 -> lambda
             case 51: return Type.TIPO_OK;
 
@@ -288,6 +288,11 @@ public class AnalizadorSemantio {
             case 55: return Type.TIPO_OK;
             //V1 -> lambda
             case 56: return Type.TIPO_OK;
+
+            //I -> B
+            case 57: return data[0].getType();
+            //I -> { C }
+            case 58: return data[1].getType();
 
             default: System.out.println("internal semantic flaw at " + getTs().getName());
             return Type.ERROR;

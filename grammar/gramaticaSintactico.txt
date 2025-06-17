@@ -1,6 +1,6 @@
 //// Gramática LR(1)
 Axioma = S
-NoTerminales = { S' S P L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z }
+NoTerminales = { S' S P L Q X F F1 F2 F3 C H A K B T E R U V E1 R1 Z1 U1 V1 V2 S1 Z I }
 Terminales = { id = ( ) ; output , : function { } void if switch int boolean string lambda var eof < constEntera cadena -= * && input return break case $ }
 Producciones = {
 	S' -> S
@@ -19,7 +19,7 @@ Producciones = {
 	F2 -> id 
 	F3 -> ( A )
 		
-	B -> if ( E ) P
+	B -> if ( E ) I
 	B -> var T id ; 
 	B -> P
 	B -> switch ( E ) { C }
@@ -56,13 +56,15 @@ Producciones = {
 	T -> void
 	E1 -> && Z E1 
 	E1 -> lambda
-	Z1 -> < R Z1 
+	Z1 -> < R
 	Z1 -> lambda
 	R1 -> * U R1 
 	R1 -> lambda
 	U1 -> -= V U1 
 	U1 -> lambda
 	V1 -> lambda
+	I -> B
+	I -> { C }
 }
 
 
