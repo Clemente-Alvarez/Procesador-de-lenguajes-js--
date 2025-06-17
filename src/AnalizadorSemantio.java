@@ -16,11 +16,13 @@ public class AnalizadorSemantio {
     private boolean zonaDeclaracion;
     ts mainTs;
     ts tsl;
+    private int numTabla;
     
 
     public AnalizadorSemantio(){
         mainTs = new ts("TablaGloval", 0);
         tsl = mainTs;
+        numTabla = 1;
         zonaDeclaracion  = true;
         try{
                 FileWriter fileWriter = new FileWriter(OUTPUTFILE);
@@ -109,8 +111,8 @@ public class AnalizadorSemantio {
             //F1 -> H
             case 11: return data[0].getType();
             //F2 -> id
-            case 12: tsl = new ts(tsl.getEntry((Integer)data[0].getToken().getMod()).getName(), 1);
-                     mainTs.getEntry((Integer)data[0].getToken().getMod()).setEtiq(data[0].getToken().getName());
+            case 12: tsl = new ts(tsl.getEntry((Integer)data[0].getToken().getMod()).getName(), numTabla++);
+                     mainTs.getEntry((Integer)data[0].getToken().getMod()).setEtiq(mainTs.getEntry((Integer)data[0].getToken().getMod()).getName());
                      return Type.TIPO_OK;
             //F3 -> ( A )
             case 13: return data[1].getType();
@@ -203,6 +205,7 @@ public class AnalizadorSemantio {
             case 39: if(zonaDeclaracion){
                         Entry entry = tsl.getEntry((Integer)data[1].getToken().getMod());
                         entry.setTipo(data[0].getType());
+                        mainTs.getEntry(mainTs.size()-1).addParametro(data[0].getType());
                         zonaDeclaracion = false;
                         return Type.TIPO_OK;
                     }
@@ -212,13 +215,14 @@ public class AnalizadorSemantio {
                     }
             //A -> lambda
             case 40: return Type.TIPO_OK;
-            //A -> void2
+            //A -> void
             case 41: return Type.VACIO;
 
             //K -> , T id K
             case 42: if(zonaDeclaracion){
                         Entry entry = tsl.getEntry((Integer)data[2].getToken().getMod());
                         entry.setTipo(data[1].getType());
+                        mainTs.getEntry(mainTs.size()-1).addParametro(data[1].getType());
                         return Type.TIPO_OK;
                     }
                     else{

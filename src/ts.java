@@ -19,6 +19,7 @@ class Entry{
         this.name = name;
         tipo = AnalizadorSemantio.Type.ERROR;
         params = new ArrayList<>();
+        numParametros = 0;
     }
 
     public int setDesplazamiento(int d){
@@ -53,8 +54,15 @@ class Entry{
         ancho = t;
     }
 
-    public void setNumParametros(int n){
-        numParametros = n;
+    public void addParametro(AnalizadorSemantio.Type type){
+        int mode;
+        switch (type) {
+            case ENTERO: mode = 1; break;
+            case LOGICO: mode = 1; break;
+            default: mode = 2;
+        }
+        params.add(0, new Pair<String,Integer>(typeToString(type), mode));
+        numParametros++;
     }
 
     public void setParametros(Pair<String, Integer>[] tiposConRef){
@@ -77,14 +85,18 @@ class Entry{
     public ArrayList<Pair<String, Integer>> getParametros(){return params;} 
 
     public String getTipoString (){
-            switch (getTipo()) {
+            return typeToString(getTipo());
+    }
+
+    private String typeToString(AnalizadorSemantio.Type type){
+        switch (type) {
             case CADENA: return "cadena";
             case ENTERO: return "entero";
             case LOGICO: return "logico";
             case VACIO: return "vacio";
             default: return "ERROR";
         }
-    }
+    } 
 
 }
 
@@ -185,7 +197,7 @@ public class ts {
             FileWriter fileWriter = new FileWriter(file, true);
             fileWriter.write(name + " #"+ num +":\n");
             for(int i =0; i < ts.size(); i++){
-                if(!ts.get(i).equals("function")){
+                if(ts.get(i).getEtiqueta() == null){
                     fileWriter.write(" * lexema: \'" +  ts.get(i).getName() + "\'\n");
                     if(ts.get(i).getAncho() > getSizeTipo(ts.get(i).getTipo())){   
                         fileWriter.write("    + tipo: \'vector\'\n");
@@ -196,10 +208,10 @@ public class ts {
                     fileWriter.write("  + despl: " + ts.get(i).getDesplazamiento() + "\n");
                 }
                 else{
-                    fileWriter.write(" * lexema:"+ ts.get(i).getName() + "\n+tipo: \'funcion\'\n    +numParam: " + ts.get(i).getNumPerametros() + "\n");
+                    fileWriter.write(" * lexema:"+ ts.get(i).getName() + "\n   +tipo: \'funcion\'\n    +numParam: " + ts.get(i).getNumPerametros() + "\n");
                     for(int a = 0; a < ts.get(i).getNumPerametros(); a++){
-                        fileWriter.write("    +TipoParam" + (i +1) +": " + ts.get(i).getParametros().get(i).getKey() + "\n"); 
-                        fileWriter.write("    +ModoParam" + (i +1) +": " + ts.get(i).getParametros().get(i).getValue() + "\n"); //1 se pasa por valor 2 por referencia
+                        fileWriter.write("    +TipoParam" + (a +1) +": " + ts.get(i).getParametros().get(a).getKey() + "\n"); 
+                        fileWriter.write("     +ModoParam" + (a +1) +": " + ts.get(i).getParametros().get(a).getValue() + "\n"); //1 se pasa por valor 2 por referencia
                     }
                     fileWriter.write("    +EtiqFuncion: " + ts.get(i).getEtiqueta() + "\n");
                 }
