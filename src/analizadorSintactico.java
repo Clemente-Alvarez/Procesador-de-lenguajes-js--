@@ -184,7 +184,6 @@ public class analizadorSintactico {
         Token<?> token = null;
         stack.clear();
         stack.push(new StackType(state.toString()));//añadimos el fondo de pila
-        System.err.println(actionMap.toString());
 
         try{
             boolean getNext = true;
@@ -192,8 +191,8 @@ public class analizadorSintactico {
                 if(getNext) token = AL.nextToken();
                 getNext = false;
                 //separa la información de la celda correspondiente en la letra y numero
-                System.err.println("token: " + token.toString() + "\tstate: " + state);
-                System.err.println("stack: " + stack.toString() + "\n");
+                //System.err.println("token: " + token.toString() + "\tstate: " + state);
+                //System.err.println("stack: " + stack.toString() + "\n");
                 String columName;
                 columName = token.getName();
                 if(!actionMap.containsKey(columName)){
@@ -201,9 +200,13 @@ public class analizadorSintactico {
                     throw new NotValidTokenException();
                 } 
                 String op = getActionTable(columName, state);
-                if(op.equals("acc")){
+                if(op.equals("acc")){//Accion accept
                     System.err.println("Sintaxis accepted!");
                     trace.add("acc");
+                    StackType temp[] = {stack.pop()};
+                    AnalizadorSemantio.Type type = AS.computeReduce(temp, 0);
+                    if(type == AnalizadorSemantio.Type.TIPO_OK) System.out.print("Semantic accepted!");
+                    else System.out.println("Semantic falied!");
                     break;
                 }
                 String[] cell = op.split("(?<=\\D)(?=\\d)");

@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class AnalizadorSemantio {
     private final String OUTPUTFILE = "grammar/output.txt";
@@ -20,6 +22,14 @@ public class AnalizadorSemantio {
         mainTs = new ts("TablaGloval", 0);
         tsl = mainTs;
         zonaDeclaracion  = true;
+        try{
+                FileWriter fileWriter = new FileWriter(OUTPUTFILE);
+                fileWriter.flush();
+                fileWriter.close();
+        }
+        catch(IOException e){
+                System.err.println("ASe: fail to write on " + OUTPUTFILE);
+        }
     }
 
     ts getTs(){
@@ -40,8 +50,7 @@ public class AnalizadorSemantio {
         switch (rule) {
              //S' -> S
             case 0: tsl.dump(OUTPUTFILE);
-                    if(data[0].getType() == data[1].getType()) return data[0].getType();
-                    else return data[0].getType(); 
+                    return data[0].getType();
             //S -> B S
             case 1: if(data[0].getType() == data[1].getType()) return data[0].getType();
                     else return data[0].getType();
@@ -180,7 +189,7 @@ public class AnalizadorSemantio {
             case 34: return Type.VACIO;
 
             //C -> B C
-            case 35: if(data[0].getType() == data[1].getType()) return data[0].getType();
+            case 35: if(data[0].getType() != Type.ERROR) return data[1].getType();
                     else return Type.ERROR;
             //C -> lambda
             case 36: return Type.VACIO;

@@ -8,6 +8,7 @@ class Entry{
     static final int TAM_ENTERO = 1;
     static final int TAM_LOGICO = 1;
     static final int TAM_CADENA = 64;
+    static final int TAM_VACIO = 0;
 
     private String name, etiq;
     private AnalizadorSemantio.Type tipo;
@@ -36,6 +37,9 @@ class Entry{
                 break;
             case CADENA:
                 setAncho(TAM_CADENA);
+                break;
+            case VACIO:
+                setAncho(TAM_VACIO);
                 break;
             default: System.err.println("ts: non valid type provided"); break;
         }
@@ -77,6 +81,7 @@ class Entry{
             case CADENA: return "cadena";
             case ENTERO: return "entero";
             case LOGICO: return "logico";
+            case VACIO: return "vacio";
             default: return "ERROR";
         }
     }
@@ -177,7 +182,7 @@ public class ts {
 
     public void dump(String file){
         try{
-            FileWriter fileWriter = new FileWriter(file);
+            FileWriter fileWriter = new FileWriter(file, true);
             fileWriter.write(name + " #"+ num +":\n");
             for(int i =0; i < ts.size(); i++){
                 if(!ts.get(i).equals("function")){
