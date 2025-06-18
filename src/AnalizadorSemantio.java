@@ -128,6 +128,10 @@ public class AnalizadorSemantio {
                 return data[4].getType();
             //B -> var T id ;
             case 15: if(zonaDeclaracion){
+                        if(data[1].getType() == Type.VACIO){
+                              System.err.println("can not declare variable" + data[2].getToken().getName() + " with type void at line " + AL.getCurrentLine());
+                                return Type.ERROR;  
+                        }
                         tsl.getEntry((Integer)data[2].getToken().getMod()).setTipo(data[1].getType());
                         zonaDeclaracion = false;
                         return Type.TIPO_OK;

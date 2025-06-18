@@ -196,7 +196,7 @@ public class analizadorSintactico {
                 getNext = false;
                 //separa la información de la celda correspondiente en la letra y numero
                 //System.err.println("token: " + token.toString() + "\tstate: " + state);
-                System.err.println("stack: " + stack.toString() + "\n");
+                //System.err.println("stack: " + stack.toString() + "\n");
                 String columName;
                 columName = token.getName();
                 if(!actionMap.containsKey(columName)){
