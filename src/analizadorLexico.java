@@ -125,8 +125,15 @@ public class analizadorLexico {
                         }
                     }
                      else if (currentChar == '/') {
-                        canRead = true;
-                        return AS.getTs().genToken("div");
+                        readNextChar();
+                        if (currentChar == '/') {
+                            canRead = true;
+                            currentState = 4;
+                        } else {
+                            String errorMessage = "Invalid character: '/' at line " + currentLine;
+                            canRead = false; // Reprocess the current character in the next cycle
+                            return new Token<>("error", errorMessage);
+                        }
                     } else if (currentChar == '$') { // EOF
                         currentState = -1; // Mark lexer as done
                         return AS.getTs().genToken("$");
@@ -189,7 +196,13 @@ public class analizadorLexico {
                         return new Token<>("error", errorMessage);
                     }
                     break;
-                
+                case 4 : 
+                    while(currentChar != '\n'){
+                        canRead = true;
+                        readNextChar();
+                    }
+                    currentState = 0;
+                    return nextToken();
 
                 default:
                     // Error: Unknown state
