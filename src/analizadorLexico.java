@@ -40,6 +40,10 @@ public class analizadorLexico {
         }
     }
 
+    public int getCurrentLine(){
+        return currentLine;
+    }
+
     public Token<?> nextToken() throws IOException {
         while (true) {
             if (currentState == -1) { // If the lexer is in exit state, stop processing

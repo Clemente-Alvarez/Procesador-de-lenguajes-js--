@@ -106,47 +106,64 @@ public class ts {
     int num;
     int desp;
     private int nextId;
+    ts mainTs;
+    boolean isChild;
 
     private Map<Integer, Entry>  ts;
 
-    private Map<String, String>  reservedKeyWords;
+    private static Map<String, String>  reservedKeyWords = new HashMap<String, String>();
+    
     
     public ts(String name, int num){
-        reservedKeyWords = new HashMap<String, String>();
-        reservedKeyWords.put("boolean", "boolean");
-        reservedKeyWords.put("break", "break");
-        reservedKeyWords.put("function", "function");
-        reservedKeyWords.put("if", "if");
-        reservedKeyWords.put("input", "input");
-        reservedKeyWords.put("int", "int");
-        reservedKeyWords.put("void", "void");
-        reservedKeyWords.put("output", "output");
-        reservedKeyWords.put("return", "return");
-        reservedKeyWords.put("string", "string");
-        reservedKeyWords.put("switch", "switch");
-        reservedKeyWords.put("var", "var");
-        reservedKeyWords.put("-=", "decAsig");
-        reservedKeyWords.put("=", "asig");
-        reservedKeyWords.put(",", "coma");
-        reservedKeyWords.put(";", "puntoYComa");
-        reservedKeyWords.put(":", "dosPuntos");
-        reservedKeyWords.put("(", "aperturaParentesis");
-        reservedKeyWords.put(")", "cierreParentesis");
-        reservedKeyWords.put("{", "aperturaLlave");
-        reservedKeyWords.put("}", "cierreLlave");
-        reservedKeyWords.put("*", "mult");
-        reservedKeyWords.put("&&", "and");
-        reservedKeyWords.put("<", "menor");
-        reservedKeyWords.put("false", "false");
-        reservedKeyWords.put("true", "true");
-        reservedKeyWords.put("$", "$");
-
+        initMap();
 		this.name = name;
         this.num = num;
         desp = 0;
         ts = new HashMap<Integer, Entry>();
         nextId = 0;
+        isChild = false;
 	}
+
+    public ts(String name, int num, ts mainTs){
+        initMap();
+		this.name = name;
+        this.num = num;
+        desp = 0;
+        ts = new HashMap<Integer, Entry>();
+        nextId = 0;
+        this.mainTs = mainTs;
+        isChild = true;
+	}
+
+    private void initMap(){
+        reservedKeyWords.put("boolean", "boolean");
+    reservedKeyWords.put("break", "break");
+    reservedKeyWords.put("function", "function");
+    reservedKeyWords.put("if", "if");
+    reservedKeyWords.put("input", "input");
+    reservedKeyWords.put("int", "int");
+    reservedKeyWords.put("void", "void");
+    reservedKeyWords.put("output", "output");
+    reservedKeyWords.put("return", "return");
+    reservedKeyWords.put("string", "string");
+    reservedKeyWords.put("switch", "switch");
+    reservedKeyWords.put("var", "var");
+    reservedKeyWords.put("-=", "decAsig");
+    reservedKeyWords.put("=", "asig");
+    reservedKeyWords.put(",", "coma");
+    reservedKeyWords.put(";", "puntoYComa");
+    reservedKeyWords.put(":", "dosPuntos");
+    reservedKeyWords.put("(", "aperturaParentesis");
+    reservedKeyWords.put(")", "cierreParentesis");
+    reservedKeyWords.put("{", "aperturaLlave");
+    reservedKeyWords.put("}", "cierreLlave");
+    reservedKeyWords.put("*", "mult");
+    reservedKeyWords.put("&&", "and");
+    reservedKeyWords.put("<", "menor");
+    reservedKeyWords.put("false", "false");
+    reservedKeyWords.put("true", "true");
+    reservedKeyWords.put("$", "$");
+    }
 
     public String getKeyWordName(String s){
         if(reservedKeyWords.containsKey(s)) return reservedKeyWords.get(s);
@@ -164,6 +181,13 @@ public class ts {
 			if(token.equals(ts.get(i).getName()))
 				return new Token<Integer>("id", i);
 		}
+        //si es local buscar en la gloval
+        if(isChild){
+            for(int i= 0; i < mainTs.size(); i++){
+			if(token.equals(mainTs.getEntry(i).getName()))
+				return new Token<Integer>("id", i);
+		    }
+        }
         //crear identificador
 		ts.put(nextId, new Entry(token));
 		return new Token<Integer>("id", nextId++);
@@ -180,7 +204,7 @@ public class ts {
     void changeName(String newName){name  = newName;}
 
     Entry getEntry(int desplazamiento){
-        return ts.get(desplazamiento);
+        return ts.get(desplazamiento); 
     }
 
     public int getSizeTipo (AnalizadorSemantio.Type t){

@@ -107,7 +107,7 @@ public class analizadorSintactico {
         actionMap = new HashMap<>();
         gotoMap = new HashMap<>();
         rules = gramar;
-        AS = new AnalizadorSemantio();
+        AS = new AnalizadorSemantio(this);
         try {
             AL = new analizadorLexico(inputFileName, AS);
         } catch (Exception e) {
@@ -174,6 +174,10 @@ public class analizadorSintactico {
         return gotoTable[stateNumber][gotoMap.get(readInput)];
     }
 
+    public int getCurrentLine(){
+        return AL.getCurrentLine();
+    }
+
     /*
      * devuelve la traza de las reglas empeladas
      * apila el analizador sintactico y el analizador semantico
@@ -192,11 +196,11 @@ public class analizadorSintactico {
                 getNext = false;
                 //separa la información de la celda correspondiente en la letra y numero
                 //System.err.println("token: " + token.toString() + "\tstate: " + state);
-                //System.err.println("stack: " + stack.toString() + "\n");
+                System.err.println("stack: " + stack.toString() + "\n");
                 String columName;
                 columName = token.getName();
                 if(!actionMap.containsKey(columName)){
-                    System.out.println("no se reconoce " +columName);
+                    System.out.println("no se reconoce " +columName + " at line " + AL.getCurrentLine());
                     throw new NotValidTokenException();
                 } 
                 String op = getActionTable(columName, state);
@@ -212,7 +216,7 @@ public class analizadorSintactico {
                 }
                 String[] cell = op.split("(?<=\\D)(?=\\d)");
                 if(cell.length != 2) {
-                        System.err.println("transición no valida");
+                        System.err.println("non valid transition at line " + AL.getCurrentLine());
                         throw new NotValidTokenException();
                 }
                 if(cell[0].equals("s")){//Accion de desplazar o Stack
@@ -241,7 +245,7 @@ public class analizadorSintactico {
             }
 
         }catch( NotValidTokenException | IOException e){
-            System.err.println("Error al procesar el lenguaje: " + e.getMessage());
+            System.err.println("Error al procesar el lenguaje: " + e.getMessage() + " at line " + AL.getCurrentLine());
         }
 
         return trace;
